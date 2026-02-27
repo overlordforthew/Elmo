@@ -1,29 +1,998 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elmo</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: #0a0a0a;
-            color: #e0e0e0;
-        }
-        .container { text-align: center; }
-        h1 { font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem; }
-        p { font-size: 1.1rem; color: #888; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Easy Engineering Services | Permit Drafting & Coordination — Hawai'i</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #F0F6FB;
+    --cloud: #FFFFFF;
+    --sand: #FBF8F4;
+    --sand-warm: #F5F0E8;
+    --ocean-deep: #1A6B9C;
+    --ocean: #2B88BF;
+    --ocean-mid: #5BA4D4;
+    --ocean-light: #A8D4F0;
+    --ocean-pale: #D6ECFA;
+    --ocean-whisper: #EAF4FB;
+    --seafoam: #B8E0D2;
+    --seafoam-light: #DFF0EA;
+    --coral-soft: #F2C4B6;
+    --coral-hint: #FAE8E0;
+    --sunset: #E8A87C;
+    --heading: #1C3A52;
+    --text: #3D5468;
+    --text-light: #7A95A8;
+    --text-muted: #A3BDCE;
+    --border: #E2EBF0;
+    --border-warm: #E8DFD2;
+    --white: #FFFFFF;
+    --font-heading: 'Lora', serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    color: var(--text);
+    background: var(--sky);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ====== NAV ====== */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 48px;
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(20px) saturate(1.4);
+    border-bottom: 1px solid rgba(43,136,191,0.08);
+    transition: all 0.4s ease;
+  }
+  nav.scrolled {
+    padding: 10px 48px;
+    box-shadow: 0 4px 30px rgba(26,107,156,0.06);
+  }
+
+  .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+  .logo-mark {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--ocean), var(--ocean-mid));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-weight: 700; font-size: 14px;
+    color: white;
+    letter-spacing: -0.5px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 2px 12px rgba(43,136,191,0.25);
+  }
+  .logo-mark::after {
+    content: '';
+    position: absolute; top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    animation: shimmer 5s ease-in-out infinite;
+  }
+  @keyframes shimmer { 0%,100%{left:-100%} 50%{left:100%} }
+
+  .logo-text { display: flex; flex-direction: column; }
+  .logo-name {
+    font-family: var(--font-heading);
+    font-size: 20px; color: var(--heading);
+    font-weight: 700; letter-spacing: 0.5px; line-height: 1;
+  }
+  .logo-sub {
+    font-size: 10px; letter-spacing: 2.5px;
+    color: var(--ocean);
+    text-transform: uppercase;
+    font-weight: 600; margin-top: 3px;
+  }
+
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 14px; font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--ocean); }
+  .nav-cta {
+    background: linear-gradient(135deg, var(--ocean), var(--ocean-mid)) !important;
+    color: white !important;
+    padding: 10px 24px !important;
+    border-radius: 8px;
+    font-weight: 600 !important;
+    transition: transform 0.3s, box-shadow 0.3s !important;
+    box-shadow: 0 2px 12px rgba(43,136,191,0.2);
+  }
+  .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(43,136,191,0.3); }
+
+  .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+  .nav-toggle span {
+    display: block; width: 22px; height: 2px;
+    background: var(--heading); margin: 5px 0; transition: 0.3s; border-radius: 2px;
+  }
+
+  /* ====== HERO ====== */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(180deg, var(--cloud) 0%, var(--sky) 40%, var(--ocean-whisper) 100%);
+    position: relative;
+    display: flex; align-items: center;
+    padding: 100px 48px 80px;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -2px; left: 0; right: 0;
+    height: 120px;
+    background: var(--sand);
+    clip-path: ellipse(55% 70% at 50% 100%);
+    z-index: 2;
+  }
+  .hero-deco-1, .hero-deco-2, .hero-deco-3 {
+    position: absolute; border-radius: 50%;
+    z-index: 0;
+  }
+  .hero-deco-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(168,212,240,0.2), transparent 70%);
+    top: -100px; right: -100px;
+  }
+  .hero-deco-2 {
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(184,224,210,0.2), transparent 70%);
+    bottom: 100px; left: -80px;
+  }
+  .hero-deco-3 {
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(242,196,182,0.2), transparent 70%);
+    top: 200px; right: 30%;
+  }
+
+  .hero-content { max-width: 680px; position: relative; z-index: 3; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 18px;
+    background: var(--ocean-whisper);
+    border: 1px solid var(--ocean-pale);
+    border-radius: 50px;
+    color: var(--ocean);
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 28px;
+    animation: fadeUp 0.8s ease both;
+  }
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: var(--ocean);
+    border-radius: 50%;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+  .hero h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(34px, 4.8vw, 58px);
+    color: var(--heading);
+    line-height: 1.15;
+    margin-bottom: 22px;
+    animation: fadeUp 0.8s ease 0.15s both;
+    font-weight: 700;
+  }
+  .hero h1 .accent {
+    color: var(--ocean);
+    position: relative;
+  }
+  .hero h1 .accent::after {
+    content: '';
+    position: absolute; bottom: 2px; left: 0; right: 0;
+    height: 8px;
+    background: var(--ocean-pale);
+    z-index: -1;
+    border-radius: 4px;
+  }
+
+  .hero-desc {
+    font-size: 17px; line-height: 1.75;
+    color: var(--text-light);
+    max-width: 540px;
+    margin-bottom: 36px;
+    animation: fadeUp 0.8s ease 0.3s both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-actions {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    animation: fadeUp 0.8s ease 0.45s both;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 15px; font-weight: 600;
+    text-decoration: none;
+    cursor: pointer; border: none;
+    transition: all 0.3s ease;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--ocean), var(--ocean-mid));
+    color: white;
+    box-shadow: 0 4px 18px rgba(43,136,191,0.25);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(43,136,191,0.3);
+  }
+  .btn-outline {
+    background: var(--cloud);
+    color: var(--ocean);
+    border: 1.5px solid var(--ocean-pale);
+  }
+  .btn-outline:hover {
+    border-color: var(--ocean);
+    background: var(--ocean-whisper);
+  }
+
+  .hero-stats {
+    display: flex; gap: 40px;
+    margin-top: 56px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.8s ease 0.6s both;
+  }
+  .stat-num {
+    font-family: var(--font-heading);
+    font-size: 34px; color: var(--ocean-deep);
+    line-height: 1; font-weight: 700;
+  }
+  .stat-label {
+    font-size: 12px; color: var(--text-muted);
+    margin-top: 5px; letter-spacing: 0.5px; font-weight: 500;
+  }
+
+  /* ====== SECTION COMMON ====== */
+  section { padding: 90px 48px; }
+  .section-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--ocean);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: clamp(26px, 3.2vw, 42px);
+    color: var(--heading);
+    line-height: 1.2;
+    margin-bottom: 18px;
+    font-weight: 700;
+  }
+  .section-desc {
+    font-size: 16px; line-height: 1.7;
+    color: var(--text-light);
+    max-width: 560px;
+  }
+
+  /* ====== SERVICES ====== */
+  .services { background: var(--sand); }
+  .services-header { text-align: center; margin-bottom: 52px; }
+  .services-header .section-desc { margin: 0 auto; }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 22px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .service-card {
+    padding: 34px;
+    background: var(--cloud);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--ocean), var(--ocean-light));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+    border-radius: 14px 14px 0 0;
+  }
+  .service-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(26,107,156,0.08);
+    border-color: var(--ocean-pale);
+  }
+  .service-card:hover::before { transform: scaleX(1); }
+
+  .service-icon {
+    width: 52px; height: 52px;
+    background: var(--ocean-whisper);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    margin-bottom: 18px;
+  }
+  .service-card h3 {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    color: var(--heading);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .service-card p {
+    font-size: 14.5px; line-height: 1.65;
+    color: var(--text-light);
+  }
+
+  /* ====== PROCESS ====== */
+  .process {
+    background: linear-gradient(180deg, var(--ocean-whisper), var(--sky));
+    position: relative; overflow: hidden;
+  }
+  .process-header { margin-bottom: 52px; text-align: center; }
+  .process-header .section-desc { margin: 0 auto; }
+
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .step {
+    padding: 32px;
+    border-radius: 14px;
+    background: var(--cloud);
+    border: 1px solid var(--border);
+    transition: all 0.4s;
+    position: relative;
+  }
+  .step:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(26,107,156,0.07);
+  }
+
+  .step-num {
+    font-family: var(--font-mono);
+    font-size: 12px; font-weight: 600;
+    color: var(--ocean);
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .step-num::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: var(--ocean-pale);
+  }
+  .step h3 {
+    font-family: var(--font-heading);
+    font-size: 19px; color: var(--heading);
+    margin-bottom: 10px; font-weight: 600;
+  }
+  .step p {
+    font-size: 14px; line-height: 1.65;
+    color: var(--text-light);
+  }
+
+  /* ====== AUDIENCE ====== */
+  .audience { background: var(--cloud); }
+  .audience-header { text-align: center; margin-bottom: 52px; }
+  .audience-header .section-desc { margin: 0 auto; }
+
+  .audience-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 22px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .audience-card {
+    background: var(--sky);
+    padding: 32px 24px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    text-align: center;
+    transition: all 0.4s;
+  }
+  .audience-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 36px rgba(26,107,156,0.07);
+    background: var(--ocean-whisper);
+  }
+
+  .audience-icon {
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, var(--ocean-pale), var(--seafoam-light));
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    margin: 0 auto 16px;
+  }
+  .audience-card h3 {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    color: var(--heading);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .audience-card p {
+    font-size: 13.5px; line-height: 1.6;
+    color: var(--text-light);
+  }
+
+  /* ====== TOOLS ====== */
+  .tools { background: var(--sand); }
+  .tools-header { text-align: center; margin-bottom: 48px; }
+  .tools-header .section-desc { margin: 0 auto; }
+
+  .tools-strip {
+    display: flex; justify-content: center; flex-wrap: wrap;
+    gap: 14px;
+    max-width: 900px; margin: 0 auto;
+  }
+  .tool-badge {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 24px;
+    background: var(--cloud);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    font-size: 13px; font-weight: 600;
+    color: var(--heading);
+    transition: all 0.3s;
+  }
+  .tool-badge:hover {
+    border-color: var(--ocean-light);
+    background: var(--ocean-whisper);
+    color: var(--ocean-deep);
+  }
+  .tool-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--ocean), var(--ocean-light));
+  }
+
+  /* ====== TRUST ====== */
+  .trust {
+    background: linear-gradient(180deg, var(--cloud), var(--sky));
+  }
+  .trust-header { text-align: center; margin-bottom: 52px; }
+  .trust-header .section-desc { margin: 0 auto; }
+
+  .trust-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .trust-item {
+    display: flex; gap: 14px;
+    padding: 26px;
+    background: var(--cloud);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .trust-item:hover {
+    box-shadow: 0 6px 24px rgba(26,107,156,0.06);
+  }
+  .trust-check {
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--ocean), var(--ocean-mid));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 14px; font-weight: 700;
+  }
+  .trust-item h4 {
+    font-size: 15px; font-weight: 600;
+    color: var(--heading);
+    margin-bottom: 4px;
+  }
+  .trust-item p {
+    font-size: 13.5px; line-height: 1.6;
+    color: var(--text-light);
+  }
+
+  /* ====== ISLAND BAR ====== */
+  .island-bar {
+    padding: 18px 48px;
+    text-align: center;
+    font-size: 12.5px;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    background: var(--cloud);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .island-bar span { margin: 0 10px; opacity: 0.4; }
+
+  /* ====== CTA ====== */
+  .cta-section {
+    background: linear-gradient(135deg, var(--ocean-whisper) 0%, var(--seafoam-light) 50%, var(--coral-hint) 100%);
+    text-align: center;
+    position: relative; overflow: hidden;
+    border-top: 1px solid var(--border);
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, rgba(43,136,191,0.06) 0%, transparent 60%);
+  }
+  .cta-content { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }
+  .cta-content .section-title { color: var(--heading); margin-bottom: 14px; }
+  .cta-content .section-desc { color: var(--text-light); margin: 0 auto 32px; }
+  .cta-buttons { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+  /* ====== FOOTER ====== */
+  footer {
+    background: var(--heading);
+    padding: 56px 48px 28px;
+    color: rgba(255,255,255,0.4);
+    font-size: 13px;
+  }
+  .footer-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; justify-content: space-between;
+    flex-wrap: wrap; gap: 40px;
+  }
+  .footer-brand { max-width: 300px; }
+  .footer-brand .logo { margin-bottom: 14px; }
+  .footer-brand .logo .logo-name { color: white; }
+  .footer-brand .logo .logo-sub { color: var(--ocean-light); }
+  .footer-brand .logo .logo-mark { box-shadow: none; }
+  .footer-brand p { line-height: 1.7; }
+  .footer-col h4 {
+    color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600;
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .footer-col a {
+    display: block; color: rgba(255,255,255,0.35);
+    text-decoration: none; margin-bottom: 9px; transition: color 0.3s;
+  }
+  .footer-col a:hover { color: var(--ocean-light); }
+  .footer-bottom {
+    max-width: 1200px; margin: 36px auto 0;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px; font-size: 11px;
+  }
+
+  /* ====== RESPONSIVE ====== */
+  @media (max-width: 768px) {
+    nav { padding: 12px 20px; }
+    .nav-links { display: none; }
+    .nav-toggle { display: block; }
+    .nav-links.open {
+      display: flex; flex-direction: column;
+      position: absolute; top: 100%; left: 0; right: 0;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(20px);
+      padding: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .nav-links.open a { color: var(--text); padding: 8px 0; }
+    section { padding: 56px 20px; }
+    .hero { padding: 80px 20px 80px; }
+    .hero h1 { font-size: clamp(28px, 7vw, 42px); }
+    .hero-stats { gap: 20px; flex-wrap: wrap; }
+    .stat-num { font-size: 26px; }
+    .footer-inner { flex-direction: column; }
+    .island-bar { padding: 14px 20px; font-size: 11px; }
+    .audience-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  }
+
+  /* ====== WHATSAPP FLOAT ====== */
+  .whatsapp-float {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    z-index: 999;
+    width: 60px; height: 60px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+    animation: fadeUp 0.8s ease 1s both;
+  }
+  .whatsapp-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 28px rgba(37,211,102,0.45);
+  }
+  .whatsapp-float svg {
+    width: 32px; height: 32px; fill: white;
+  }
+  .whatsapp-tooltip {
+    position: absolute;
+    right: 70px; top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    font-size: 12px; font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .whatsapp-float:hover .whatsapp-tooltip { opacity: 1; }
+
+  /* ====== CONTACT FORM ====== */
+  .contact-form {
+    text-align: left;
+  }
+  .form-group {
+    margin-bottom: 18px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 13px; font-weight: 600;
+    color: var(--heading);
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+  }
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text);
+    background: var(--cloud);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    outline: none;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: var(--ocean-mid);
+    box-shadow: 0 0 0 3px rgba(43,136,191,0.1);
+  }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: var(--text-muted);
+  }
+  .form-group textarea { resize: vertical; }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .checkbox-group {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px;
+  }
+  .checkbox-label {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 18px;
+    background: var(--cloud);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px; font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.25s;
+    user-select: none;
+  }
+  .checkbox-label:hover { border-color: var(--ocean-light); }
+  .checkbox-label input { display: none; }
+  .check-box {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.25s;
+    flex-shrink: 0;
+  }
+  .checkbox-label input:checked ~ .check-box {
+    background: var(--ocean);
+    border-color: var(--ocean);
+  }
+  .checkbox-label input:checked ~ .check-box::after {
+    content: '\2713';
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .checkbox-label:has(input:checked) {
+    border-color: var(--ocean-light);
+    background: var(--ocean-whisper);
+  }
+  .form-success {
+    text-align: center;
+    padding: 32px;
+    background: var(--seafoam-light);
+    border: 1px solid var(--seafoam);
+    border-radius: 12px;
+    color: var(--heading);
+    font-size: 16px;
+    font-weight: 500;
+    display: none;
+  }
+  .form-success span { font-size: 32px; display: block; margin-bottom: 12px; }
+  @media (max-width: 768px) {
+    .form-row { grid-template-columns: 1fr; gap: 0; }
+    .checkbox-group { flex-direction: column; }
+  }
+
+  /* ====== SCROLL REVEAL ====== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Elmo</h1>
-        <p>Coming soon.</p>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="logo">
+    <div class="logo-mark">EES</div>
+    <div class="logo-text">
+      <span class="logo-name">Easy</span>
+      <span class="logo-sub">Engineering Services</span>
     </div>
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="#services">Services</a>
+    <a href="#process">Process</a>
+    <a href="#audience">Who We Serve</a>
+    <a href="#trust">Why Easy</a>
+    <a href="#contact" class="nav-cta">Get Started</a>
+  </div>
+  <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-deco-1"></div>
+  <div class="hero-deco-2"></div>
+  <div class="hero-deco-3"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="badge-dot"></span>Serving Hawaii's Housing Community</div>
+    <h1>Expert Permit Drafting &<br><span class="accent">ePlans Coordination</span><br>for Hawai'i Professionals</h1>
+    <p class="hero-desc">Your dedicated outsource partner for construction permit plans, REVIT drafting, and seamless ePlans coordination with the City & County of Honolulu. Trusted across Hawai'i.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn btn-primary">Request a Consultation &#8594;</a>
+      <a href="#services" class="btn btn-outline" onclick="event.preventDefault();document.getElementById('services').scrollIntoView({behavior:'smooth'})">View Services</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><span class="stat-num">25+</span><span class="stat-label">Years Civil & Architectural Experience</span></div>
+      <div class="stat-item"><span class="stat-num">12+</span><span class="stat-label">Years Hawai'i Experience</span></div>
+      <div class="stat-item"><span class="stat-num">300+</span><span class="stat-label">Permits Processed</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ISLAND BAR -->
+<div class="island-bar">
+  &#127802; Proudly serving the islands <span>|</span> Hawai'i <span>|</span> City & County of Honolulu <span>|</span> ePlans & REVIT Specialist &#127796;
+</div>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="services-header reveal">
+    <p class="section-label">What We Do</p>
+    <h2 class="section-title">Full-Cycle Permit Plan Services</h2>
+    <p class="section-desc">From initial drafting to final County approval — every detail handled so you can focus on design and construction.</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card reveal"><div class="service-icon">&#128203;</div><h3>Permit Plan Preparation</h3><p>Complete permit plan sets for residential and commercial projects — site plans, floor plans, elevations, sections, and all required details for building permits.</p></div>
+    <div class="service-card reveal"><div class="service-icon">&#128260;</div><h3>ePlans Coordination</h3><p>End-to-end management of the City & County of Honolulu ePlans portal — submissions, resubmissions, comment responses, and tracking through approval.</p></div>
+    <div class="service-card reveal"><div class="service-icon">&#127959;&#65039;</div><h3>Plan Revisions & Corrections</h3><p>Fast turnaround on County review comments. We interpret examiner notes and update plans efficiently to keep your project on schedule.</p></div>
+    <div class="service-card reveal"><div class="service-icon">&#129309;</div><h3>Outsource Drafting Support</h3><p>Architects & Engineers — scale your team without the overhead. We specialize in fast-turnaround drafting so your firm can take on more projects and meet tight deadlines.</p></div>
+    <div class="service-card reveal"><div class="service-icon">&#128208;</div><h3>REVIT Drafting</h3><p>Precision construction documents in Autodesk REVIT — architectural, structural, and civil plans built to County standards and ready for submission.</p></div>
+    <div class="service-card reveal"><div class="service-icon">&#128202;</div><h3>Civil Engineering Support</h3><p>Grading plans, site engineering, and civil design support to help move your project through the permitting process.</p></div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process" id="process">
+  <div class="process-header reveal">
+    <p class="section-label">How It Works</p>
+    <h2 class="section-title">A Streamlined, Transparent Process</h2>
+    <p class="section-desc">We integrate with your workflow — not the other way around.</p>
+  </div>
+  <div class="process-steps">
+    <div class="step reveal"><div class="step-num">01</div><h3>Scope & Review</h3><p>Share your project scope, sketches, surveys, or existing drawings. We provide a clear timeline and quote.</p></div>
+    <div class="step reveal"><div class="step-num">02</div><h3>REVIT Drafting</h3><p>Complete permit-ready plans in REVIT, following County of Honolulu standards and your firm's specifications.</p></div>
+    <div class="step reveal"><div class="step-num">03</div><h3>Your Review</h3><p>Plans delivered for your review and sign-off. We iterate quickly until everything meets your exact standards.</p></div>
+    <div class="step reveal"><div class="step-num">04</div><h3>ePlans Submission</h3><p>Full ePlans submission, status tracking, and all back-and-forth with County examiners through approval.</p></div>
+  </div>
+</section>
+
+<!-- WHO WE SERVE -->
+<section class="audience" id="audience">
+  <div class="audience-header reveal">
+    <p class="section-label">Who We Serve</p>
+    <h2 class="section-title">Built for Hawai'i's Design & Build Professionals</h2>
+    <p class="section-desc">Solo practitioner or large firm — Easy scales to fit your project pipeline.</p>
+  </div>
+  <div class="audience-grid">
+    <div class="audience-card reveal"><div class="audience-icon">&#127963;&#65039;</div><h3>Architects & Engineers</h3><p>Outsource permit drafting, REVIT plans, and ePlans coordination so your team can focus on design and analysis.</p></div>
+    <div class="audience-card reveal"><div class="audience-icon">&#128269;</div><h3>3rd Party Reviewers</h3><p>Rapid, accurate plan revisions based on your review comments.</p></div>
+    <div class="audience-card reveal"><div class="audience-icon">&#127968;</div><h3>Design-Build</h3><p>Drafting and permit management for residential and commercial projects.</p></div>
+    <div class="audience-card reveal"><div class="audience-icon">&#127969;</div><h3>Homeowners</h3><p>Permit plans for additions, renovations, and new builds at a fair price.</p></div>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section class="tools" id="tools">
+  <div class="tools-header reveal">
+    <p class="section-label">Tools & Platforms</p>
+    <h2 class="section-title">Industry-Standard Technology</h2>
+    <p class="section-desc">The same professional tools and platforms you rely on every day.</p>
+  </div>
+  <div class="tools-strip reveal">
+    <div class="tool-badge"><span class="tool-dot"></span>Autodesk REVIT</div>
+    <div class="tool-badge"><span class="tool-dot"></span>ePlans (Honolulu)</div>
+    <div class="tool-badge"><span class="tool-dot"></span>AutoCAD</div>
+    <div class="tool-badge"><span class="tool-dot"></span>PDF Markup</div>
+    <div class="tool-badge"><span class="tool-dot"></span>BIM Coordination</div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="trust" id="trust">
+  <div class="trust-header reveal">
+    <p class="section-label">Why Easy</p>
+    <h2 class="section-title">Credibility You Can Count On</h2>
+    <p class="section-desc">We specialize in one thing: Hawai'i permits done right.</p>
+  </div>
+  <div class="trust-grid">
+    <div class="trust-item reveal"><div class="trust-check">&#10003;</div><div><h4>Licensed Civil Engineer (Philippines)</h4><p>25+ years of civil and architectural experience serving Hawai'i's permitting landscape.</p></div></div>
+    <div class="trust-item reveal"><div class="trust-check">&#10003;</div><div><h4>Hawai'i Permit Specialists</h4><p>12+ years focused on Hawai'i. We know the County codes, reviewers, and processes inside out.</p></div></div>
+    <div class="trust-item reveal"><div class="trust-check">&#10003;</div><div><h4>REVIT-Native Workflow</h4><p>Plans built natively in REVIT — clean, coordinated BIM from the start.</p></div></div>
+    <div class="trust-item reveal"><div class="trust-check">&#10003;</div><div><h4>ePlans Fluency</h4><p>Daily ePlans navigation. Submissions, resubmissions, and comment tracking handled.</p></div></div>
+    <div class="trust-item reveal"><div class="trust-check">&#10003;</div><div><h4>Architects & Engineers' Go-To</h4><p>We specialize in outsource drafting for design professionals — fast turnaround, your standards.</p></div></div>
+    <div class="trust-item reveal"><div class="trust-check">&#10003;</div><div><h4>Fast & Fair</h4><p>Competitive rates, reliable timelines, proactive communication — no surprises.</p></div></div>
+  </div>
+</section>
+
+<!-- CONTACT FORM -->
+<section class="cta-section" id="contact">
+  <div class="cta-content reveal" style="max-width:560px;">
+    <p class="section-label">Get Started</p>
+    <h2 class="section-title">Let's Talk About Your Project</h2>
+    <p class="section-desc" style="margin-bottom:36px;">Fill out the form below and we'll get back to you promptly.</p>
+
+    <div class="contact-form">
+      <div class="form-group">
+        <label for="fname">Name</label>
+        <input type="text" id="fname" placeholder="Your full name" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fphone">Phone Number</label>
+          <input type="tel" id="fphone" placeholder="(808) 000-0000">
+        </div>
+        <div class="form-group">
+          <label for="femail">Email</label>
+          <input type="email" id="femail" placeholder="you@email.com" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Services Needed <span style="font-weight:400;color:var(--text-muted);font-size:12px;">(select all that apply)</span></label>
+        <div class="checkbox-group">
+          <label class="checkbox-label"><input type="checkbox" value="Architecture" class="svc-check"><span class="check-box"></span>Architecture</label>
+          <label class="checkbox-label"><input type="checkbox" value="Civil" class="svc-check"><span class="check-box"></span>Civil</label>
+          <label class="checkbox-label"><input type="checkbox" value="ePlans" class="svc-check"><span class="check-box"></span>ePlans</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="fnotes">Notes</label>
+        <textarea id="fnotes" rows="4" placeholder="Tell us about your project — scope, timeline, location, etc."></textarea>
+      </div>
+      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitForm()">Send Request &#8594;</button>
+    </div>
+    <div class="form-success">
+      <span>&#127802;</span>
+      Mahalo! Your request has been sent.<br>We'll be in touch shortly.
+    </div>
+  </div>
+</section>
+
+<!-- WHATSAPP -->
+<a href="https://wa.me/639294142510" target="_blank" rel="noopener" class="whatsapp-float" aria-label="Chat on WhatsApp">
+  <span class="whatsapp-tooltip">Chat with us on WhatsApp</span>
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="logo">
+        <div class="logo-mark" style="width:36px;height:36px;font-size:12px;">EES</div>
+        <div class="logo-text"><span class="logo-name" style="font-size:17px;">Easy</span><span class="logo-sub" style="font-size:9px;">Engineering Services</span></div>
+      </a>
+      <p style="margin-top:12px;">Expert permit drafting and ePlans coordination for Hawai'i's design and engineering community. &#127802;</p>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <a href="#services">REVIT Drafting</a><a href="#services">Permit Plans</a><a href="#services">ePlans Coordination</a><a href="#services">Plan Revisions</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#trust">About</a><a href="#process">Our Process</a><a href="#audience">Who We Serve</a><a href="#contact">Contact</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Easy Engineering Services. All rights reserved.</span>
+    <span>Hawai'i &#127965;&#65039;</span>
+  </div>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50));
+  document.getElementById('navToggle').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) { setTimeout(() => entry.target.classList.add('visible'), i * 80); observer.unobserve(entry.target); }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+  document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
+
+  function submitForm() {
+    const name = document.getElementById('fname').value.trim();
+    const phone = document.getElementById('fphone').value.trim();
+    const email = document.getElementById('femail').value.trim();
+    const notes = document.getElementById('fnotes').value.trim();
+    const services = Array.from(document.querySelectorAll('.svc-check:checked')).map(c => c.value).join(', ');
+
+    if (!name || !email) {
+      alert('Please enter your name and email.');
+      return;
+    }
+
+    const subject = encodeURIComponent('Easy Engineering Services \u2014 New Inquiry from ' + name);
+    const body = encodeURIComponent(
+      'Name: ' + name + '\n' +
+      'Phone: ' + (phone || 'Not provided') + '\n' +
+      'Email: ' + email + '\n' +
+      'Services: ' + (services || 'Not specified') + '\n' +
+      'Notes: ' + (notes || 'None') + '\n'
+    );
+
+    window.location.href = 'mailto:elmoherrera2014@gmail.com?subject=' + subject + '&body=' + body;
+
+    document.querySelector('.contact-form').style.display = 'none';
+    const success = document.querySelector('.form-success');
+    success.style.display = 'block';
+  }
+</script>
 </body>
 </html>
