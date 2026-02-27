@@ -918,7 +918,7 @@
     </div>
     <div class="form-success">
       <span>&#127802;</span>
-      Mahalo! Your request has been sent.<br>We'll be in touch shortly.
+      Your email client should open with your inquiry.<br>Please send the email to complete your request.<br><small style="color:var(--text-light);">If your email client didn't open, email us directly at elmoherrera2014@gmail.com</small>
     </div>
   </div>
 </section>
@@ -992,6 +992,10 @@
     document.querySelector('.contact-form').style.display = 'none';
     const success = document.querySelector('.form-success');
     success.style.display = 'block';
+    setTimeout(() => {
+      document.querySelector('.contact-form').style.display = '';
+      success.style.display = 'none';
+    }, 10000);
   }
 </script>
 </body>
