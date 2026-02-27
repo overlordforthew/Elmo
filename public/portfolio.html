@@ -12,10 +12,95 @@
   <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --sky: #F0F6FB; --cloud: #FFFFFF; --sand: #FBF8F4;
+      --ocean-deep: #1A6B9C; --ocean: #2B88BF; --ocean-mid: #5BA4D4;
+      --ocean-light: #A8D4F0; --ocean-pale: #D6ECFA; --ocean-whisper: #EAF4FB;
+      --heading: #1C3A52; --text: #3D5468; --text-light: #7A95A8; --text-muted: #A3BDCE;
+      --border: #E2EBF0;
+      --font-heading: 'Lora', serif; --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    body { -webkit-font-smoothing: antialiased; }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 48px;
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom: 1px solid rgba(43,136,191,0.08);
+      transition: all 0.4s ease;
+    }
+    nav.scrolled { padding: 10px 48px; box-shadow: 0 4px 30px rgba(26,107,156,0.06); }
+    .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+    .logo-mark {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--ocean), var(--ocean-mid));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-weight: 700; font-size: 14px;
+      color: white; letter-spacing: -0.5px;
+      position: relative; overflow: hidden;
+      box-shadow: 0 2px 12px rgba(43,136,191,0.25);
+    }
+    .logo-mark::after {
+      content: ''; position: absolute; top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      animation: shimmer 5s ease-in-out infinite;
+    }
+    @keyframes shimmer { 0%,100%{left:-100%} 50%{left:100%} }
+    .logo-text { display: flex; flex-direction: column; }
+    .logo-name { font-family: var(--font-heading); font-size: 20px; color: var(--heading); font-weight: 700; letter-spacing: 0.5px; line-height: 1; }
+    .logo-sub { font-size: 10px; letter-spacing: 2.5px; color: var(--ocean); text-transform: uppercase; font-weight: 600; margin-top: 3px; }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: var(--text-light); text-decoration: none; font-size: 14px; font-weight: 500; letter-spacing: 0.3px; transition: color 0.3s; }
+    .nav-links a:hover { color: var(--ocean); }
+    .nav-links a.active { color: var(--ocean); font-weight: 600; }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--ocean), var(--ocean-mid)) !important;
+      color: white !important; padding: 10px 24px !important;
+      border-radius: 8px; font-weight: 600 !important;
+      transition: transform 0.3s, box-shadow 0.3s !important;
+      box-shadow: 0 2px 12px rgba(43,136,191,0.2);
+    }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(43,136,191,0.3); }
+    .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+    .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--heading); margin: 5px 0; transition: 0.3s; border-radius: 2px; }
+    @media (max-width: 768px) {
+      nav { padding: 12px 20px; }
+      .nav-links { display: none; }
+      .nav-toggle { display: block; }
+      .nav-links.open {
+        display: flex; flex-direction: column;
+        position: absolute; top: 100%; left: 0; right: 0;
+        background: rgba(255,255,255,0.97); backdrop-filter: blur(20px);
+        padding: 20px; border-top: 1px solid var(--border);
+      }
+      .nav-links.open a { color: var(--text); padding: 8px 0; }
+    }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <nav id="navbar">
+    <a href="/" class="logo">
+      <div class="logo-mark">EES</div>
+      <div class="logo-text">
+        <span class="logo-name">Easy</span>
+        <span class="logo-sub">Engineering Services</span>
+      </div>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="/#services">Services</a>
+      <a href="/#process">Process</a>
+      <a href="/#audience">Who We Serve</a>
+      <a href="/portfolio.html" class="active">Portfolio</a>
+      <a href="/estimator.html">Estimator</a>
+      <a href="/#contact" class="nav-cta">Get Started</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </nav>
+  <div id="root" style="padding-top:76px;"></div>
   <script type="text/babel">
 const { useState, useEffect, useMemo } = React;
 
@@ -636,6 +721,11 @@ function Portfolio() {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<Portfolio />);
+  </script>
+  <script>
+    window.addEventListener('scroll', () => document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 30));
+    document.getElementById('navToggle').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
+    document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
   </script>
 </body>
 </html>
