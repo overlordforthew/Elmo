@@ -1163,10 +1163,12 @@
       panelDot.classList.add('offline');
       panelText.textContent = "We're away";
       panelSub.textContent = "Leave a message — we'll respond ASAP";
-      if (day === 0) {
-        hoursDisplay.textContent = "Back Monday • Mon–Sat, 3pm–6am HST";
+      if (day === 0 && hour < 9) {
+        hoursDisplay.textContent = "Back later today • Sun–Fri, 3pm–6am HST";
+      } else if (day === 0) {
+        hoursDisplay.textContent = "Back tonight • Sun–Fri, 3pm–6am HST";
       } else {
-        hoursDisplay.textContent = "Mon–Sat • 3pm–6am HST";
+        hoursDisplay.textContent = "Sun–Fri • 3pm–6am HST";
       }
     }
   }
