@@ -126,10 +126,11 @@
     min-height: 100vh;
     background: linear-gradient(180deg, var(--cloud) 0%, var(--sky) 40%, var(--ocean-whisper) 100%);
     position: relative;
-    display: flex; align-items: center; justify-content: center;
+    display: flex; align-items: center;
     padding: 100px 48px 80px;
     overflow: hidden;
   }
+  /* Soft wave decoration */
   .hero::after {
     content: '';
     position: absolute; bottom: -2px; left: 0; right: 0;
@@ -138,6 +139,7 @@
     clip-path: ellipse(55% 70% at 50% 100%);
     z-index: 2;
   }
+  /* Subtle circles/bubbles */
   .hero-deco-1, .hero-deco-2, .hero-deco-3 {
     position: absolute; border-radius: 50%;
     z-index: 0;
@@ -158,7 +160,7 @@
     top: 200px; right: 30%;
   }
 
-  .hero-content { max-width: 680px; margin: 0 auto; text-align: center; position: relative; z-index: 3; }
+  .hero-content { max-width: 680px; position: relative; z-index: 3; }
 
   .hero-badge {
     display: inline-flex; align-items: center; gap: 8px;
@@ -206,7 +208,7 @@
     font-size: 17px; line-height: 1.75;
     color: var(--text-light);
     max-width: 540px;
-    margin: 0 auto 36px;
+    margin-bottom: 36px;
     animation: fadeUp 0.8s ease 0.3s both;
   }
 
@@ -216,7 +218,7 @@
   }
 
   .hero-actions {
-    display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+    display: flex; gap: 14px; flex-wrap: wrap;
     animation: fadeUp 0.8s ease 0.45s both;
   }
   .btn {
@@ -249,7 +251,7 @@
   }
 
   .hero-stats {
-    display: flex; gap: 40px; justify-content: center;
+    display: flex; gap: 40px;
     margin-top: 56px;
     padding-top: 32px;
     border-top: 1px solid var(--border);
@@ -606,42 +608,144 @@
     .audience-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
   }
 
-  /* ====== WHATSAPP FLOAT ====== */
-  .whatsapp-float {
+  /* ====== CHAT WIDGET ====== */
+  .chat-fab {
     position: fixed;
     bottom: 28px; right: 28px;
-    z-index: 999;
+    z-index: 998;
+  }
+  .chat-toggle {
     width: 60px; height: 60px;
-    background: #25D366;
     border-radius: 50%;
+    background: linear-gradient(135deg, #2B88BF, #5BA4D4);
+    border: none;
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+    cursor: pointer;
+    box-shadow: 0 4px 24px rgba(43,136,191,0.35);
     transition: transform 0.3s, box-shadow 0.3s;
-    text-decoration: none;
+    position: relative;
     animation: fadeUp 0.8s ease 1s both;
   }
-  .whatsapp-float:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 28px rgba(37,211,102,0.45);
+  .chat-toggle:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 32px rgba(43,136,191,0.4);
   }
-  .whatsapp-float svg {
-    width: 32px; height: 32px; fill: white;
+  .chat-toggle svg { width: 28px; height: 28px; fill: white; }
+  .chat-toggle.open svg.icon-chat { display: none; }
+  .chat-toggle.open svg.icon-close { display: block; }
+  .chat-toggle:not(.open) svg.icon-close { display: none; }
+
+  /* Online indicator dot */
+  .online-dot {
+    position: absolute; top: 2px; right: 2px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #25D366;
+    border: 2.5px solid white;
+    animation: onlinePulse 2s ease-in-out infinite;
   }
-  .whatsapp-tooltip {
+  .online-dot.offline {
+    background: #A3BDCE;
+    animation: none;
+  }
+  @keyframes onlinePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(37,211,102,0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(37,211,102,0); }
+  }
+
+  /* Expanded panel */
+  .chat-panel {
     position: absolute;
-    right: 70px; top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0,0,0,0.8);
-    color: white;
-    font-size: 12px; font-weight: 600;
-    padding: 8px 14px;
-    border-radius: 8px;
-    white-space: nowrap;
+    bottom: 72px; right: 0;
+    width: 300px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 12px 48px rgba(26,107,156,0.15);
+    border: 1px solid #E2EBF0;
+    overflow: hidden;
+    transform: scale(0.9) translateY(10px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s;
+    transition: all 0.3s ease;
+    transform-origin: bottom right;
   }
-  .whatsapp-float:hover .whatsapp-tooltip { opacity: 1; }
+  .chat-panel.open {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .chat-panel-header {
+    padding: 20px 20px 16px;
+    background: linear-gradient(135deg, #1C3A52 0%, #2B5A78 100%);
+    color: white;
+  }
+  .chat-panel-status {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #25D366;
+  }
+  .status-dot.offline { background: #F59E0B; }
+  .chat-panel-title {
+    font-family: var(--font-heading);
+    font-size: 18px; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .chat-panel-sub {
+    font-size: 12px;
+    opacity: 0.7;
+  }
+  .chat-options {
+    padding: 16px;
+  }
+  .chat-option {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1.5px solid #E2EBF0;
+    background: white;
+    text-decoration: none;
+    color: #1C3A52;
+    margin-bottom: 10px;
+    transition: all 0.25s;
+    cursor: pointer;
+  }
+  .chat-option:last-child { margin-bottom: 0; }
+  .chat-option:hover {
+    border-color: #A8D4F0;
+    background: #EAF4FB;
+    transform: translateX(4px);
+  }
+  .chat-option-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .chat-option-icon.wa { background: #E7F9EE; }
+  .chat-option-icon.live { background: #EAF4FB; }
+  .chat-option-icon.email { background: #FBF8F4; }
+  .chat-option-label {
+    font-size: 14px; font-weight: 600;
+  }
+  .chat-option-desc {
+    font-size: 11px; color: #7A95A8;
+    margin-top: 1px;
+  }
+  .chat-panel-footer {
+    padding: 12px 20px;
+    background: #F7FAFC;
+    border-top: 1px solid #E2EBF0;
+    font-size: 11px;
+    color: #A3BDCE;
+    text-align: center;
+  }
+  .chat-panel-footer strong { color: #7A95A8; }
 
   /* ====== CONTACT FORM ====== */
   .contact-form {
@@ -715,7 +819,7 @@
     border-color: var(--ocean);
   }
   .checkbox-label input:checked ~ .check-box::after {
-    content: '\2713';
+    content: '✓';
     color: white;
     font-size: 11px;
     font-weight: 700;
@@ -768,7 +872,8 @@
     <a href="#services">Services</a>
     <a href="#process">Process</a>
     <a href="#audience">Who We Serve</a>
-    <a href="#trust">Why Easy</a>
+    <a href="portfolio.html">Portfolio</a>
+    <a href="estimator.html">Estimator</a>
     <a href="#contact" class="nav-cta">Get Started</a>
   </div>
   <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -784,7 +889,7 @@
     <h1>Expert Permit Drafting &<br><span class="accent">ePlans Coordination</span><br>for Hawai'i Professionals</h1>
     <p class="hero-desc">Your dedicated outsource partner for construction permit plans, REVIT drafting, and seamless ePlans coordination with the City & County of Honolulu. Trusted across Hawai'i.</p>
     <div class="hero-actions">
-      <a href="#contact" class="btn btn-primary">Request a Consultation &#8594;</a>
+      <a href="#contact" class="btn btn-primary">Request a Consultation →</a>
       <a href="#services" class="btn btn-outline" onclick="event.preventDefault();document.getElementById('services').scrollIntoView({behavior:'smooth'})">View Services</a>
     </div>
     <div class="hero-stats">
@@ -797,7 +902,7 @@
 
 <!-- ISLAND BAR -->
 <div class="island-bar">
-  &#127802; Proudly serving the islands <span>|</span> Hawai'i <span>|</span> City & County of Honolulu <span>|</span> ePlans & REVIT Specialist &#127796;
+  🌺 Proudly serving the islands <span>|</span> Hawai'i <span>|</span> City & County of Honolulu <span>|</span> ePlans & REVIT Specialist 🌴
 </div>
 
 <!-- SERVICES -->
@@ -808,12 +913,12 @@
     <p class="section-desc">From initial drafting to final County approval — every detail handled so you can focus on design and construction.</p>
   </div>
   <div class="services-grid">
-    <div class="service-card reveal"><div class="service-icon">&#128203;</div><h3>Permit Plan Preparation</h3><p>Complete permit plan sets for residential and commercial projects — site plans, floor plans, elevations, sections, and all required details for building permits.</p></div>
-    <div class="service-card reveal"><div class="service-icon">&#128260;</div><h3>ePlans Coordination</h3><p>End-to-end management of the City & County of Honolulu ePlans portal — submissions, resubmissions, comment responses, and tracking through approval.</p></div>
-    <div class="service-card reveal"><div class="service-icon">&#127959;&#65039;</div><h3>Plan Revisions & Corrections</h3><p>Fast turnaround on County review comments. We interpret examiner notes and update plans efficiently to keep your project on schedule.</p></div>
-    <div class="service-card reveal"><div class="service-icon">&#129309;</div><h3>Outsource Drafting Support</h3><p>Architects & Engineers — scale your team without the overhead. We specialize in fast-turnaround drafting so your firm can take on more projects and meet tight deadlines.</p></div>
-    <div class="service-card reveal"><div class="service-icon">&#128208;</div><h3>REVIT Drafting</h3><p>Precision construction documents in Autodesk REVIT — architectural, structural, and civil plans built to County standards and ready for submission.</p></div>
-    <div class="service-card reveal"><div class="service-icon">&#128202;</div><h3>Civil Engineering Support</h3><p>Grading plans, site engineering, and civil design support to help move your project through the permitting process.</p></div>
+    <div class="service-card reveal"><div class="service-icon">📋</div><h3>Permit Plan Preparation</h3><p>Complete permit plan sets for residential and commercial projects — site plans, floor plans, elevations, sections, and all required details for building permits.</p></div>
+    <div class="service-card reveal"><div class="service-icon">🔄</div><h3>ePlans Coordination</h3><p>End-to-end management of the City & County of Honolulu ePlans portal — submissions, resubmissions, comment responses, and tracking through approval.</p></div>
+    <div class="service-card reveal"><div class="service-icon">🏗️</div><h3>Plan Revisions & Corrections</h3><p>Fast turnaround on County review comments. We interpret examiner notes and update plans efficiently to keep your project on schedule.</p></div>
+    <div class="service-card reveal"><div class="service-icon">🤝</div><h3>Outsource Drafting Support</h3><p>Architects & Engineers — scale your team without the overhead. We specialize in fast-turnaround drafting so your firm can take on more projects and meet tight deadlines.</p></div>
+    <div class="service-card reveal"><div class="service-icon">📐</div><h3>REVIT Drafting</h3><p>Precision construction documents in Autodesk REVIT — architectural, structural, and civil plans built to County standards and ready for submission.</p></div>
+    <div class="service-card reveal"><div class="service-icon">📊</div><h3>Civil Engineering Support</h3><p>Grading plans, site engineering, and civil design support to help move your project through the permitting process.</p></div>
   </div>
 </section>
 
@@ -840,10 +945,10 @@
     <p class="section-desc">Solo practitioner or large firm — Easy scales to fit your project pipeline.</p>
   </div>
   <div class="audience-grid">
-    <div class="audience-card reveal"><div class="audience-icon">&#127963;&#65039;</div><h3>Architects & Engineers</h3><p>Outsource permit drafting, REVIT plans, and ePlans coordination so your team can focus on design and analysis.</p></div>
-    <div class="audience-card reveal"><div class="audience-icon">&#128269;</div><h3>3rd Party Reviewers</h3><p>Rapid, accurate plan revisions based on your review comments.</p></div>
-    <div class="audience-card reveal"><div class="audience-icon">&#127968;</div><h3>Design-Build</h3><p>Drafting and permit management for residential and commercial projects.</p></div>
-    <div class="audience-card reveal"><div class="audience-icon">&#127969;</div><h3>Homeowners</h3><p>Permit plans for additions, renovations, and new builds at a fair price.</p></div>
+    <div class="audience-card reveal"><div class="audience-icon">🏛️</div><h3>Architects & Engineers</h3><p>Outsource permit drafting, REVIT plans, and ePlans coordination so your team can focus on design and analysis.</p></div>
+    <div class="audience-card reveal"><div class="audience-icon">🔍</div><h3>3rd Party Reviewers</h3><p>Rapid, accurate plan revisions based on your review comments.</p></div>
+    <div class="audience-card reveal"><div class="audience-icon">🏠</div><h3>Design-Build</h3><p>Drafting and permit management for residential and commercial projects.</p></div>
+    <div class="audience-card reveal"><div class="audience-icon">🏡</div><h3>Homeowners</h3><p>Permit plans for additions, renovations, and new builds at a fair price.</p></div>
   </div>
 </section>
 
@@ -871,12 +976,12 @@
     <p class="section-desc">We specialize in one thing: Hawai'i permits done right.</p>
   </div>
   <div class="trust-grid">
-    <div class="trust-item reveal"><div class="trust-check">&#10003;</div><div><h4>Licensed Civil Engineer (Philippines)</h4><p>25+ years of civil and architectural experience serving Hawai'i's permitting landscape.</p></div></div>
-    <div class="trust-item reveal"><div class="trust-check">&#10003;</div><div><h4>Hawai'i Permit Specialists</h4><p>12+ years focused on Hawai'i. We know the County codes, reviewers, and processes inside out.</p></div></div>
-    <div class="trust-item reveal"><div class="trust-check">&#10003;</div><div><h4>REVIT-Native Workflow</h4><p>Plans built natively in REVIT — clean, coordinated BIM from the start.</p></div></div>
-    <div class="trust-item reveal"><div class="trust-check">&#10003;</div><div><h4>ePlans Fluency</h4><p>Daily ePlans navigation. Submissions, resubmissions, and comment tracking handled.</p></div></div>
-    <div class="trust-item reveal"><div class="trust-check">&#10003;</div><div><h4>Architects & Engineers' Go-To</h4><p>We specialize in outsource drafting for design professionals — fast turnaround, your standards.</p></div></div>
-    <div class="trust-item reveal"><div class="trust-check">&#10003;</div><div><h4>Fast & Fair</h4><p>Competitive rates, reliable timelines, proactive communication — no surprises.</p></div></div>
+    <div class="trust-item reveal"><div class="trust-check">✓</div><div><h4>Licensed Civil Engineer (Philippines)</h4><p>25+ years of civil and architectural experience serving Hawai'i's permitting landscape.</p></div></div>
+    <div class="trust-item reveal"><div class="trust-check">✓</div><div><h4>Hawai'i Permit Specialists</h4><p>12+ years focused on Hawai'i. We know the County codes, reviewers, and processes inside out.</p></div></div>
+    <div class="trust-item reveal"><div class="trust-check">✓</div><div><h4>REVIT-Native Workflow</h4><p>Plans built natively in REVIT — clean, coordinated BIM from the start.</p></div></div>
+    <div class="trust-item reveal"><div class="trust-check">✓</div><div><h4>ePlans Fluency</h4><p>Daily ePlans navigation. Submissions, resubmissions, and comment tracking handled.</p></div></div>
+    <div class="trust-item reveal"><div class="trust-check">✓</div><div><h4>Architects & Engineers' Go-To</h4><p>We specialize in outsource drafting for design professionals — fast turnaround, your standards.</p></div></div>
+    <div class="trust-item reveal"><div class="trust-check">✓</div><div><h4>Fast & Fair</h4><p>Competitive rates, reliable timelines, proactive communication — no surprises.</p></div></div>
   </div>
 </section>
 
@@ -914,20 +1019,60 @@
         <label for="fnotes">Notes</label>
         <textarea id="fnotes" rows="4" placeholder="Tell us about your project — scope, timeline, location, etc."></textarea>
       </div>
-      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitForm()">Send Request &#8594;</button>
+      <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitForm()">Send Request →</button>
     </div>
     <div class="form-success">
-      <span>&#127802;</span>
-      Your email client should open with your inquiry.<br>Please send the email to complete your request.<br><small style="color:var(--text-light);">If your email client didn't open, email us directly at elmoherrera2014@gmail.com</small>
+      <span>🌺</span>
+      Mahalo! Your request has been sent.<br>We'll be in touch shortly.
     </div>
   </div>
 </section>
 
-<!-- WHATSAPP -->
-<a href="https://wa.me/639294142510" target="_blank" rel="noopener" class="whatsapp-float" aria-label="Chat on WhatsApp">
-  <span class="whatsapp-tooltip">Chat with us on WhatsApp</span>
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-</a>
+<!-- CHAT WIDGET -->
+<div class="chat-fab" id="chatWidget">
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-panel-header">
+      <div class="chat-panel-status">
+        <span class="status-dot" id="panelStatusDot"></span>
+        <span id="panelStatusText">We're online</span>
+      </div>
+      <div class="chat-panel-title">Chat with us</div>
+      <div class="chat-panel-sub" id="panelSubtext">Typically replies within minutes</div>
+    </div>
+    <div class="chat-options">
+      <a href="https://wa.me/639294142510" target="_blank" rel="noopener" class="chat-option">
+        <div class="chat-option-icon wa">💬</div>
+        <div>
+          <div class="chat-option-label">WhatsApp</div>
+          <div class="chat-option-desc">Chat directly — fast response</div>
+        </div>
+      </a>
+      <div class="chat-option" onclick="if(window.Tawk_API){Tawk_API.maximize();}else{window.open('https://wa.me/639294142510','_blank');}document.getElementById('chatPanel').classList.remove('open');document.getElementById('chatToggle').classList.remove('open');">
+        <div class="chat-option-icon live">🟢</div>
+        <div>
+          <div class="chat-option-label">Live Chat</div>
+          <div class="chat-option-desc">Chat right here on the site</div>
+        </div>
+      </div>
+      <a href="#contact" class="chat-option" onclick="document.getElementById('chatPanel').classList.remove('open');document.getElementById('chatToggle').classList.remove('open');">
+        <div class="chat-option-icon email">📩</div>
+        <div>
+          <div class="chat-option-label">Send a Message</div>
+          <div class="chat-option-desc">Fill out our contact form</div>
+        </div>
+      </a>
+    </div>
+    <div class="chat-panel-footer" id="chatFooter">
+      <strong>Hours:</strong> <span id="hoursDisplay">Mon–Sat • Available now</span>
+    </div>
+  </div>
+
+  <button class="chat-toggle" id="chatToggle" aria-label="Chat with us">
+    <span class="online-dot" id="onlineDot"></span>
+    <svg class="icon-chat" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+    <svg class="icon-close" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+  </button>
+</div>
 
 <!-- FOOTER -->
 <footer>
@@ -937,7 +1082,7 @@
         <div class="logo-mark" style="width:36px;height:36px;font-size:12px;">EES</div>
         <div class="logo-text"><span class="logo-name" style="font-size:17px;">Easy</span><span class="logo-sub" style="font-size:9px;">Engineering Services</span></div>
       </a>
-      <p style="margin-top:12px;">Expert permit drafting and ePlans coordination for Hawai'i's design and engineering community. &#127802;</p>
+      <p style="margin-top:12px;">Expert permit drafting and ePlans coordination for Hawai'i's design and engineering community. 🌺</p>
     </div>
     <div class="footer-col">
       <h4>Services</h4>
@@ -947,10 +1092,14 @@
       <h4>Company</h4>
       <a href="#trust">About</a><a href="#process">Our Process</a><a href="#audience">Who We Serve</a><a href="#contact">Contact</a>
     </div>
+    <div class="footer-col">
+      <h4>Tools</h4>
+      <a href="portfolio.html">Project Portfolio</a><a href="estimator.html">Cost Estimator</a><a href="dashboard.html">Firm Portal</a>
+    </div>
   </div>
   <div class="footer-bottom">
-    <span>&copy; 2026 Easy Engineering Services. All rights reserved.</span>
-    <span>Hawai'i &#127965;&#65039;</span>
+    <span>© 2026 Easy Engineering Services. All rights reserved.</span>
+    <span>Hawai'i 🏝️</span>
   </div>
 </footer>
 
@@ -966,6 +1115,86 @@
   reveals.forEach(el => observer.observe(el));
   document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
 
+  // ====== CHAT WIDGET ======
+  const chatToggle = document.getElementById('chatToggle');
+  const chatPanel = document.getElementById('chatPanel');
+  chatToggle.addEventListener('click', () => {
+    chatToggle.classList.toggle('open');
+    chatPanel.classList.toggle('open');
+  });
+  // Close panel when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!document.getElementById('chatWidget').contains(e.target)) {
+      chatPanel.classList.remove('open');
+      chatToggle.classList.remove('open');
+    }
+  });
+
+  // ====== AVAILABILITY DETECTION ======
+  // Elmo's hours: 9:00 AM – 12:00 AM (midnight) PHT, Mon–Sat
+  // PHT = UTC+8
+  function checkAvailability() {
+    const now = new Date();
+    // Convert to PHT
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const pht = new Date(utc + (8 * 3600000));
+    const hour = pht.getHours();
+    const day = pht.getDay(); // 0=Sun, 6=Sat
+
+    // Available: Mon(1)–Sat(6), 9am–midnight(0)
+    const isWorkDay = day >= 1 && day <= 6;
+    const isWorkHour = hour >= 9; // 9am to midnight (hour 0-23, so 9-23)
+    const isOnline = isWorkDay && isWorkHour;
+
+    const onlineDot = document.getElementById('onlineDot');
+    const panelDot = document.getElementById('panelStatusDot');
+    const panelText = document.getElementById('panelStatusText');
+    const panelSub = document.getElementById('panelSubtext');
+    const hoursDisplay = document.getElementById('hoursDisplay');
+
+    if (isOnline) {
+      onlineDot.classList.remove('offline');
+      panelDot.classList.remove('offline');
+      panelText.textContent = "We're online";
+      panelSub.textContent = "Typically replies within minutes";
+      hoursDisplay.textContent = "Mon–Sat • Available now 🟢";
+    } else {
+      onlineDot.classList.add('offline');
+      panelDot.classList.add('offline');
+      panelText.textContent = "We're away";
+      panelSub.textContent = "Leave a message — we'll respond ASAP";
+      if (day === 0) {
+        hoursDisplay.textContent = "Back Monday • Mon–Sat, 3pm–6am HST";
+      } else {
+        hoursDisplay.textContent = "Mon–Sat • 3pm–6am HST";
+      }
+    }
+  }
+  checkAvailability();
+  setInterval(checkAvailability, 60000); // Re-check every minute
+
+  // ====== TAWK.TO LIVE CHAT ======
+  // Replace 'YOUR_TAWK_PROPERTY_ID' and 'YOUR_TAWK_WIDGET_ID' with actual IDs from https://dashboard.tawk.to
+  // 1. Sign up free at tawk.to
+  // 2. Create a property for Easy Engineering Services
+  // 3. Go to Administration > Chat Widget > Copy the property ID and widget ID
+  // 4. Replace the placeholders below
+  /*
+  var Tawk_API = Tawk_API || {};
+  Tawk_API.onLoad = function() {
+    // Hide default tawk widget — we use our own button
+    Tawk_API.hideWidget();
+  };
+  (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/YOUR_TAWK_PROPERTY_ID/YOUR_TAWK_WIDGET_ID';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+  })();
+  */
+
   function submitForm() {
     const name = document.getElementById('fname').value.trim();
     const phone = document.getElementById('fphone').value.trim();
@@ -978,7 +1207,7 @@
       return;
     }
 
-    const subject = encodeURIComponent('Easy Engineering Services \u2014 New Inquiry from ' + name);
+    const subject = encodeURIComponent('Easy Engineering Services — New Inquiry from ' + name);
     const body = encodeURIComponent(
       'Name: ' + name + '\n' +
       'Phone: ' + (phone || 'Not provided') + '\n' +
@@ -989,13 +1218,10 @@
 
     window.location.href = 'mailto:elmoherrera2014@gmail.com?subject=' + subject + '&body=' + body;
 
+    // Show success message
     document.querySelector('.contact-form').style.display = 'none';
     const success = document.querySelector('.form-success');
     success.style.display = 'block';
-    setTimeout(() => {
-      document.querySelector('.contact-form').style.display = '';
-      success.style.display = 'none';
-    }, 10000);
   }
 </script>
 </body>

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Permit Cost Estimator | Easy Engineering Services</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState, useEffect } = React;
+
+const FONTS_LINK = "https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap";
+
+/*
+  ============================================================
+  PRICING CONFIG — UPDATE THESE WITH ELMO'S ACTUAL NUMBERS
+  All values are [low, high] flat fee ranges in USD
+  ============================================================
+*/
+const PRICING = {
+  adu: {
+    label: "ADU (Accessory Dwelling Unit)",
+    icon: "\u{1F3E0}",
+    desc: "Detached or attached ADU on existing residential lot",
+    base: [3500, 5500],
+  },
+  reno: {
+    label: "Residential Renovation",
+    icon: "\u{1F528}",
+    desc: "Additions, remodels, or alterations to existing homes",
+    base: [2500, 4500],
+  },
+  new_res: {
+    label: "New Residential Construction",
+    icon: "\u{1F3E1}",
+    desc: "Single-family or multi-family new builds",
+    base: [5000, 9000],
+  },
+  commercial_ti: {
+    label: "Commercial Tenant Improvement",
+    icon: "\u{1F3E2}",
+    desc: "Interior buildout or renovation of commercial space",
+    base: [3000, 6000],
+  },
+  eplans_only: {
+    label: "ePlans Coordination Only",
+    icon: "\u{1F4E4}",
+    desc: "Submission, tracking, and resubmission \u2014 no drafting",
+    base: [1200, 2500],
+  },
+  revisions: {
+    label: "Plan Revisions / Corrections",
+    icon: "\u{1F4DD}",
+    desc: "Addressing County review comments on existing plans",
+    base: [800, 2000],
+  },
+};
+
+const SCOPE_MULTIPLIERS = {
+  small: { label: "Small", desc: "Under 500 sq ft or simple scope", mult: 0.85, icon: "S" },
+  medium: { label: "Medium", desc: "500\u20131,500 sq ft or moderate scope", mult: 1.0, icon: "M" },
+  large: { label: "Large", desc: "1,500\u20133,000 sq ft or complex scope", mult: 1.25, icon: "L" },
+  xlarge: { label: "Extra Large", desc: "3,000+ sq ft or highly complex", mult: 1.55, icon: "XL" },
+};
+
+const TIMELINE_ADJUSTMENTS = {
+  rush: { label: "Rush", desc: "1\u20132 weeks", adj: 0.20, icon: "\u26A1" },
+  standard: { label: "Standard", desc: "3\u20134 weeks", adj: 0, icon: "\u{1F4C5}" },
+  flexible: { label: "Flexible", desc: "4+ weeks", adj: -0.05, icon: "\u{1F30A}" },
+};
+
+const ADDONS = {
+  civil: { label: "Civil Engineering Support", price: [800, 1500], icon: "\u{1F4CA}" },
+  structural: { label: "Structural Coordination", price: [600, 1200], icon: "\u{1F3D7}\uFE0F" },
+  expedite: { label: "Expedited ePlans Follow-up", price: [400, 800], icon: "\u{1F680}" },
+};
+
+function PermitEstimator() {
+  const [step, setStep] = useState(0);
+  const [projectType, setProjectType] = useState(null);
+  const [scope, setScope] = useState(null);
+  const [timeline, setTimeline] = useState(null);
+  const [addons, setAddons] = useState([]);
+  const [showResult, setShowResult] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", notes: "" });
+
+  useEffect(() => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = FONTS_LINK;
+    document.head.appendChild(link);
+  }, []);
+
+  const calcEstimate = () => {
+    if (!projectType || !scope || !timeline) return { low: 0, high: 0 };
+    const base = PRICING[projectType].base;
+    const mult = SCOPE_MULTIPLIERS[scope].mult;
+    const adj = TIMELINE_ADJUSTMENTS[timeline].adj;
+    let low = Math.round(base[0] * mult * (1 + adj) / 50) * 50;
+    let high = Math.round(base[1] * mult * (1 + adj) / 50) * 50;
+    let addonLow = 0, addonHigh = 0;
+    addons.forEach(a => {
+      addonLow += ADDONS[a].price[0];
+      addonHigh += ADDONS[a].price[1];
+    });
+    return { low: low + addonLow, high: high + addonHigh, baseLow: low, baseHigh: high, addonLow, addonHigh };
+  };
+
+  const handleSubmit = () => {
+    if (!formData.name || !formData.email) return;
+    const est = calcEstimate();
+    const subject = encodeURIComponent(`Easy Engineering \u2014 Estimate Request from ${formData.name}`);
+    const body = encodeURIComponent(
+      `--- PERMIT COST ESTIMATE REQUEST ---\n\n` +
+      `Name: ${formData.name}\n` +
+      `Email: ${formData.email}\n` +
+      `Phone: ${formData.phone || "Not provided"}\n\n` +
+      `Project Type: ${PRICING[projectType].label}\n` +
+      `Scope: ${SCOPE_MULTIPLIERS[scope].label} (${SCOPE_MULTIPLIERS[scope].desc})\n` +
+      `Timeline: ${TIMELINE_ADJUSTMENTS[timeline].label} (${TIMELINE_ADJUSTMENTS[timeline].desc})\n` +
+      `Add-ons: ${addons.length ? addons.map(a => ADDONS[a].label).join(", ") : "None"}\n\n` +
+      `Estimated Range: $${est.low.toLocaleString()} \u2013 $${est.high.toLocaleString()}\n\n` +
+      `Notes: ${formData.notes || "None"}\n`
+    );
+    window.location.href = `mailto:elmoherrera2014@gmail.com?subject=${subject}&body=${body}`;
+    setSubmitted(true);
+  };
+
+  const reset = () => {
+    setStep(0);
+    setProjectType(null);
+    setScope(null);
+    setTimeline(null);
+    setAddons([]);
+    setShowResult(false);
+    setShowForm(false);
+    setSubmitted(false);
+    setFormData({ name: "", email: "", phone: "", notes: "" });
+  };
+
+  const steps = [
+    { num: "1", label: "Project Type" },
+    { num: "2", label: "Scope" },
+    { num: "3", label: "Timeline" },
+    { num: "4", label: "Add-ons" },
+    { num: "\u2713", label: "Estimate" },
+  ];
+
+  const css = {
+    wrap: {
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      minHeight: "100vh",
+      background: "linear-gradient(180deg, #FFFFFF 0%, #F0F6FB 30%, #EAF4FB 100%)",
+      padding: "0 20px 60px",
+      color: "#3D5468",
+    },
+    header: {
+      textAlign: "center",
+      paddingTop: 48,
+      marginBottom: 40,
+    },
+    logoRow: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 12,
+      marginBottom: 28,
+    },
+    logoMark: {
+      width: 40, height: 40,
+      background: "linear-gradient(135deg, #2B88BF, #5BA4D4)",
+      borderRadius: 10,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontFamily: "'JetBrains Mono', monospace",
+      fontWeight: 700, fontSize: 13, color: "white",
+    },
+    title: {
+      fontFamily: "'Lora', serif",
+      fontSize: "clamp(26px, 4vw, 40px)",
+      fontWeight: 700,
+      color: "#1C3A52",
+      marginBottom: 10,
+      lineHeight: 1.2,
+    },
+    subtitle: {
+      fontSize: 16, color: "#7A95A8", maxWidth: 520, margin: "0 auto", lineHeight: 1.6,
+    },
+    container: {
+      maxWidth: 740, margin: "0 auto",
+    },
+    // Progress
+    progressWrap: {
+      display: "flex", justifyContent: "center", gap: 0, marginBottom: 36, position: "relative",
+    },
+    progressStep: (active, done) => ({
+      display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+      flex: 1, position: "relative", zIndex: 2,
+    }),
+    progressDot: (active, done) => ({
+      width: 36, height: 36, borderRadius: "50%",
+      background: done ? "#2D8C6E" : active ? "linear-gradient(135deg, #2B88BF, #5BA4D4)" : "#E2EBF0",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontSize: done ? 14 : 13, fontWeight: 700,
+      color: active || done ? "white" : "#A3BDCE",
+      boxShadow: active ? "0 4px 16px rgba(43,136,191,0.3)" : "none",
+      transition: "all 0.4s",
+      fontFamily: done ? "inherit" : "'JetBrains Mono', monospace",
+    }),
+    progressLabel: (active) => ({
+      fontSize: 11, fontWeight: active ? 700 : 500,
+      color: active ? "#1C3A52" : "#A3BDCE",
+      textAlign: "center",
+    }),
+    progressLine: {
+      position: "absolute", top: 17, left: "10%", right: "10%", height: 3,
+      background: "#E2EBF0", zIndex: 1, borderRadius: 2,
+    },
+    // Cards
+    stepTitle: {
+      fontFamily: "'Lora', serif",
+      fontSize: 22, fontWeight: 700, color: "#1C3A52", marginBottom: 6,
+    },
+    stepDesc: {
+      fontSize: 14, color: "#7A95A8", marginBottom: 24,
+    },
+    optionGrid: (cols) => ({
+      display: "grid",
+      gridTemplateColumns: `repeat(${cols}, 1fr)`,
+      gap: 14,
+    }),
+    optionCard: (selected) => ({
+      background: selected ? "#EAF4FB" : "white",
+      border: `2px solid ${selected ? "#5BA4D4" : "#E2EBF0"}`,
+      borderRadius: 14,
+      padding: "22px 20px",
+      cursor: "pointer",
+      transition: "all 0.25s",
+      textAlign: "center",
+      position: "relative",
+    }),
+    optionIcon: { fontSize: 28, marginBottom: 8 },
+    optionLabel: { fontSize: 15, fontWeight: 600, color: "#1C3A52", marginBottom: 4 },
+    optionDesc: { fontSize: 12, color: "#7A95A8", lineHeight: 1.5 },
+    selectedCheck: {
+      position: "absolute", top: 10, right: 10,
+      width: 22, height: 22, borderRadius: "50%",
+      background: "linear-gradient(135deg, #2B88BF, #5BA4D4)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      color: "white", fontSize: 12, fontWeight: 700,
+    },
+    // Buttons
+    btnRow: {
+      display: "flex", justifyContent: "space-between", marginTop: 28,
+    },
+    btnPrimary: {
+      padding: "14px 32px",
+      background: "linear-gradient(135deg, #2B88BF, #5BA4D4)",
+      color: "white", border: "none", borderRadius: 10,
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontSize: 15, fontWeight: 600, cursor: "pointer",
+      boxShadow: "0 4px 18px rgba(43,136,191,0.25)",
+      transition: "transform 0.2s",
+    },
+    btnSecondary: {
+      padding: "14px 24px",
+      background: "white", color: "#2B88BF",
+      border: "1.5px solid #D6ECFA", borderRadius: 10,
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontSize: 14, fontWeight: 600, cursor: "pointer",
+      transition: "all 0.2s",
+    },
+    // Result
+    resultCard: {
+      background: "white", borderRadius: 18, padding: "36px 32px",
+      border: "1px solid #E2EBF0",
+      boxShadow: "0 8px 40px rgba(26,107,156,0.06)",
+    },
+    estimateRange: {
+      fontFamily: "'Lora', serif",
+      fontSize: "clamp(32px, 5vw, 48px)",
+      fontWeight: 700, color: "#1C3A52",
+      textAlign: "center", margin: "16px 0 8px",
+      lineHeight: 1,
+    },
+    breakdownRow: {
+      display: "flex", justifyContent: "space-between", alignItems: "center",
+      padding: "12px 0",
+      borderBottom: "1px solid #F0F6FB",
+      fontSize: 14,
+    },
+    disclaimerBox: {
+      background: "#FBF8F4", borderRadius: 12, padding: "16px 20px",
+      marginTop: 20, fontSize: 13, color: "#7A95A8", lineHeight: 1.6,
+      border: "1px solid #E8DFD2",
+    },
+    ctaBox: {
+      background: "linear-gradient(135deg, #EAF4FB 0%, #DFF0EA 50%, #FAE8E0 100%)",
+      borderRadius: 16, padding: "32px 28px", textAlign: "center",
+      marginTop: 24, border: "1px solid #E2EBF0",
+    },
+    input: {
+      width: "100%", padding: "13px 16px",
+      border: "1.5px solid #E2EBF0", borderRadius: 10,
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontSize: 14, color: "#3D5468", outline: "none",
+      marginBottom: 12, boxSizing: "border-box",
+    },
+    formLabel: {
+      display: "block", fontSize: 13, fontWeight: 600,
+      color: "#1C3A52", marginBottom: 5,
+    },
+  };
+
+  // STEP CONTENT
+  const renderStep = () => {
+    if (submitted) {
+      return (
+        <div style={{ ...css.resultCard, textAlign: "center", padding: "56px 32px" }}>
+          <div style={{ fontSize: 56, marginBottom: 16 }}>{"\u{1F33A}"}</div>
+          <h2 style={{ fontFamily: "'Lora', serif", fontSize: 26, color: "#1C3A52", marginBottom: 10 }}>Mahalo, {formData.name}!</h2>
+          <p style={{ fontSize: 16, color: "#7A95A8", lineHeight: 1.7, maxWidth: 400, margin: "0 auto 28px" }}>
+            Your estimate request has been sent. We'll follow up within 24 hours with a detailed quote for your project.
+          </p>
+          <button style={css.btnPrimary} onClick={reset}>Start New Estimate {"\u2192"}</button>
+        </div>
+      );
+    }
+
+    if (showForm) {
+      const est = calcEstimate();
+      return (
+        <div style={css.resultCard}>
+          <button onClick={() => setShowForm(false)} style={{ background: "none", border: "none", color: "#2B88BF", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif", marginBottom: 20, padding: 0 }}>
+            {"\u2190"} Back to Estimate
+          </button>
+          <h2 style={{ fontFamily: "'Lora', serif", fontSize: 22, color: "#1C3A52", marginBottom: 6 }}>Get Your Detailed Quote</h2>
+          <p style={{ fontSize: 14, color: "#7A95A8", marginBottom: 8 }}>
+            Your estimate: <strong style={{ color: "#1C3A52" }}>${est.low.toLocaleString()} {"\u2013"} ${est.high.toLocaleString()}</strong>
+          </p>
+          <p style={{ fontSize: 13, color: "#A3BDCE", marginBottom: 24 }}>
+            Fill in your details and we'll send a precise quote within 24 hours.
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div>
+              <label style={css.formLabel}>Name *</label>
+              <input style={css.input} placeholder="Your full name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+            </div>
+            <div>
+              <label style={css.formLabel}>Email *</label>
+              <input style={css.input} placeholder="you@email.com" type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+            </div>
+          </div>
+          <div>
+            <label style={css.formLabel}>Phone</label>
+            <input style={css.input} placeholder="(808) 000-0000" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+          </div>
+          <div>
+            <label style={css.formLabel}>Notes about your project</label>
+            <textarea style={{ ...css.input, minHeight: 80, resize: "vertical" }} placeholder="Location, scope details, special requirements..." value={formData.notes} onChange={e => setFormData({ ...formData, notes: e.target.value })} />
+          </div>
+
+          <button style={{ ...css.btnPrimary, width: "100%", marginTop: 8 }} onClick={handleSubmit}>
+            Send Estimate Request {"\u2192"}
+          </button>
+        </div>
+      );
+    }
+
+    if (showResult) {
+      const est = calcEstimate();
+      return (
+        <div>
+          <div style={css.resultCard}>
+            <div style={{ textAlign: "center", marginBottom: 4 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: "uppercase", color: "#2B88BF", marginBottom: 8 }}>Your Estimated Range</div>
+              <div style={css.estimateRange}>${est.low.toLocaleString()} {"\u2013"} ${est.high.toLocaleString()}</div>
+              <div style={{ fontSize: 13, color: "#A3BDCE" }}>Flat fee estimate {"\u00B7"} final quote may vary</div>
+            </div>
+
+            <div style={{ marginTop: 28, marginBottom: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", color: "#A3BDCE", marginBottom: 12 }}>Breakdown</div>
+
+              <div style={css.breakdownRow}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span>{PRICING[projectType].icon}</span>
+                  <div>
+                    <div style={{ fontWeight: 600, color: "#1C3A52" }}>{PRICING[projectType].label}</div>
+                    <div style={{ fontSize: 12, color: "#A3BDCE" }}>{SCOPE_MULTIPLIERS[scope].label} scope {"\u00B7"} {TIMELINE_ADJUSTMENTS[timeline].label} timeline</div>
+                  </div>
+                </div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: "#1C3A52", fontSize: 15 }}>
+                  ${est.baseLow.toLocaleString()} {"\u2013"} ${est.baseHigh.toLocaleString()}
+                </div>
+              </div>
+
+              {addons.map(a => (
+                <div key={a} style={css.breakdownRow}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span>{ADDONS[a].icon}</span>
+                    <span style={{ fontWeight: 500, color: "#3D5468" }}>{ADDONS[a].label}</span>
+                  </div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "#3D5468", fontSize: 14 }}>
+                    +${ADDONS[a].price[0].toLocaleString()} {"\u2013"} ${ADDONS[a].price[1].toLocaleString()}
+                  </div>
+                </div>
+              ))}
+
+              <div style={{ ...css.breakdownRow, borderBottom: "none", borderTop: "2px solid #E2EBF0", marginTop: 4, paddingTop: 16 }}>
+                <span style={{ fontWeight: 700, color: "#1C3A52", fontSize: 15 }}>Total Estimated Range</span>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#1A6B9C", fontSize: 17 }}>
+                  ${est.low.toLocaleString()} {"\u2013"} ${est.high.toLocaleString()}
+                </div>
+              </div>
+            </div>
+
+            <div style={css.disclaimerBox}>
+              {"\u{1F4A1}"} This is a preliminary estimate based on typical project parameters. Final pricing depends on specific site conditions, complexity, and County requirements. Contact us for a precise quote.
+            </div>
+          </div>
+
+          <div style={css.ctaBox}>
+            <div style={{ fontSize: 20, marginBottom: 8 }}>{"\u{1F4E9}"}</div>
+            <h3 style={{ fontFamily: "'Lora', serif", fontSize: 20, color: "#1C3A52", marginBottom: 8 }}>Ready for a Precise Quote?</h3>
+            <p style={{ fontSize: 14, color: "#7A95A8", marginBottom: 20, maxWidth: 380, margin: "0 auto 20px" }}>
+              Share your details and we'll send a detailed project quote within 24 hours {"\u2014"} no obligation.
+            </p>
+            <button style={css.btnPrimary} onClick={() => setShowForm(true)}>Get My Detailed Quote {"\u2192"}</button>
+          </div>
+
+          <div style={{ textAlign: "center", marginTop: 20 }}>
+            <button style={css.btnSecondary} onClick={reset}>Start Over</button>
+          </div>
+        </div>
+      );
+    }
+
+    // Step 0: Project Type
+    if (step === 0) {
+      return (
+        <div>
+          <h2 style={css.stepTitle}>What type of project?</h2>
+          <p style={css.stepDesc}>Select the option that best describes your project.</p>
+          <div style={css.optionGrid(2)}>
+            {Object.entries(PRICING).map(([key, val]) => (
+              <div key={key} style={css.optionCard(projectType === key)}
+                onClick={() => setProjectType(key)}
+                onMouseOver={e => { if (projectType !== key) e.currentTarget.style.borderColor = "#A8D4F0"; }}
+                onMouseOut={e => { if (projectType !== key) e.currentTarget.style.borderColor = "#E2EBF0"; }}>
+                {projectType === key && <div style={css.selectedCheck}>{"\u2713"}</div>}
+                <div style={css.optionIcon}>{val.icon}</div>
+                <div style={css.optionLabel}>{val.label}</div>
+                <div style={css.optionDesc}>{val.desc}</div>
+              </div>
+            ))}
+          </div>
+          <div style={css.btnRow}>
+            <div />
+            <button style={{ ...css.btnPrimary, opacity: projectType ? 1 : 0.5, pointerEvents: projectType ? "auto" : "none" }}
+              onClick={() => setStep(1)}>
+              Next {"\u2192"}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Step 1: Scope
+    if (step === 1) {
+      return (
+        <div>
+          <h2 style={css.stepTitle}>How large is the project?</h2>
+          <p style={css.stepDesc}>This helps us estimate complexity and drafting time.</p>
+          <div style={css.optionGrid(4)}>
+            {Object.entries(SCOPE_MULTIPLIERS).map(([key, val]) => (
+              <div key={key} style={css.optionCard(scope === key)}
+                onClick={() => setScope(key)}
+                onMouseOver={e => { if (scope !== key) e.currentTarget.style.borderColor = "#A8D4F0"; }}
+                onMouseOut={e => { if (scope !== key) e.currentTarget.style.borderColor = "#E2EBF0"; }}>
+                {scope === key && <div style={css.selectedCheck}>{"\u2713"}</div>}
+                <div style={{ fontSize: 22, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: scope === key ? "#2B88BF" : "#A3BDCE", marginBottom: 8 }}>{val.icon}</div>
+                <div style={css.optionLabel}>{val.label}</div>
+                <div style={css.optionDesc}>{val.desc}</div>
+              </div>
+            ))}
+          </div>
+          <div style={css.btnRow}>
+            <button style={css.btnSecondary} onClick={() => setStep(0)}>{"\u2190"} Back</button>
+            <button style={{ ...css.btnPrimary, opacity: scope ? 1 : 0.5, pointerEvents: scope ? "auto" : "none" }}
+              onClick={() => setStep(2)}>
+              Next {"\u2192"}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Step 2: Timeline
+    if (step === 2) {
+      return (
+        <div>
+          <h2 style={css.stepTitle}>What's your timeline?</h2>
+          <p style={css.stepDesc}>Rush projects may carry a premium. Flexible timelines can save you money.</p>
+          <div style={css.optionGrid(3)}>
+            {Object.entries(TIMELINE_ADJUSTMENTS).map(([key, val]) => (
+              <div key={key} style={css.optionCard(timeline === key)}
+                onClick={() => setTimeline(key)}
+                onMouseOver={e => { if (timeline !== key) e.currentTarget.style.borderColor = "#A8D4F0"; }}
+                onMouseOut={e => { if (timeline !== key) e.currentTarget.style.borderColor = "#E2EBF0"; }}>
+                {timeline === key && <div style={css.selectedCheck}>{"\u2713"}</div>}
+                <div style={css.optionIcon}>{val.icon}</div>
+                <div style={css.optionLabel}>{val.label}</div>
+                <div style={css.optionDesc}>{val.desc}</div>
+                {key === "rush" && <div style={{ marginTop: 8, fontSize: 11, fontWeight: 600, color: "#B85C3A" }}>+20% premium</div>}
+                {key === "flexible" && <div style={{ marginTop: 8, fontSize: 11, fontWeight: 600, color: "#2D8C6E" }}>Potential savings</div>}
+              </div>
+            ))}
+          </div>
+          <div style={css.btnRow}>
+            <button style={css.btnSecondary} onClick={() => setStep(1)}>{"\u2190"} Back</button>
+            <button style={{ ...css.btnPrimary, opacity: timeline ? 1 : 0.5, pointerEvents: timeline ? "auto" : "none" }}
+              onClick={() => setStep(3)}>
+              Next {"\u2192"}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Step 3: Add-ons
+    if (step === 3) {
+      const toggleAddon = (key) => {
+        setAddons(prev => prev.includes(key) ? prev.filter(a => a !== key) : [...prev, key]);
+      };
+      return (
+        <div>
+          <h2 style={css.stepTitle}>Any additional services?</h2>
+          <p style={css.stepDesc}>Optional add-ons. Skip if not needed.</p>
+          <div style={css.optionGrid(3)}>
+            {Object.entries(ADDONS).map(([key, val]) => (
+              <div key={key} style={css.optionCard(addons.includes(key))}
+                onClick={() => toggleAddon(key)}
+                onMouseOver={e => { if (!addons.includes(key)) e.currentTarget.style.borderColor = "#A8D4F0"; }}
+                onMouseOut={e => { if (!addons.includes(key)) e.currentTarget.style.borderColor = "#E2EBF0"; }}>
+                {addons.includes(key) && <div style={css.selectedCheck}>{"\u2713"}</div>}
+                <div style={css.optionIcon}>{val.icon}</div>
+                <div style={css.optionLabel}>{val.label}</div>
+                <div style={{ ...css.optionDesc, marginTop: 6, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: "#1A6B9C" }}>
+                  +${val.price[0].toLocaleString()}{"\u2013"}${val.price[1].toLocaleString()}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={css.btnRow}>
+            <button style={css.btnSecondary} onClick={() => setStep(2)}>{"\u2190"} Back</button>
+            <button style={css.btnPrimary} onClick={() => { setStep(4); setShowResult(true); }}>
+              See My Estimate {"\u2192"}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  const activeStep = showResult ? 4 : step;
+
+  return (
+    <div style={css.wrap}>
+      <div style={css.header}>
+        <div style={css.logoRow}>
+          <div style={css.logoMark}>EES</div>
+          <div>
+            <div style={{ fontFamily: "'Lora', serif", fontSize: 18, fontWeight: 700, color: "#1C3A52" }}>Easy</div>
+            <div style={{ fontSize: 9, letterSpacing: 2, color: "#2B88BF", textTransform: "uppercase", fontWeight: 600 }}>Engineering Services</div>
+          </div>
+        </div>
+        <h1 style={css.title}>Permit Cost Estimator</h1>
+        <p style={css.subtitle}>Get a ballpark estimate for your Hawai'i permit drafting project in under 60 seconds. No signup required.</p>
+      </div>
+
+      <div style={css.container}>
+        {/* Progress bar */}
+        {!submitted && (
+          <div style={css.progressWrap}>
+            <div style={css.progressLine} />
+            {steps.map((s, i) => {
+              const isDone = i < activeStep;
+              const isActive = i === activeStep;
+              return (
+                <div key={i} style={css.progressStep(isActive, isDone)}>
+                  <div style={css.progressDot(isActive, isDone)}>
+                    {isDone ? "\u2713" : s.num}
+                  </div>
+                  <span style={css.progressLabel(isActive)}>{s.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {renderStep()}
+      </div>
+
+      {/* Footer */}
+      <div style={{ textAlign: "center", marginTop: 48, fontSize: 12, color: "#A3BDCE" }}>
+        {"\u{1F33A}"} Easy Engineering Services {"\u00B7"} Hawai'i {"\u00B7"} <a href="https://wa.me/639294142510" target="_blank" rel="noopener noreferrer" style={{ color: "#2B88BF", textDecoration: "none" }}>WhatsApp</a>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<PermitEstimator />);
+  </script>
+</body>
+</html>

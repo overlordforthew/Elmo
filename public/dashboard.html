@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Firm Portal | Easy Engineering Services</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState, useEffect } = React;
+
+const FONTS_LINK = "https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap";
+
+// Demo data
+const DEMO_FIRMS = {
+  "demo": {
+    password: "demo",
+    name: "Pacific Design Group",
+    contact: "Sarah Chen, AIA",
+    email: "sarah@pacificdesign.com",
+    since: "2023",
+    projectCount: 12,
+  }
+};
+
+const EPLANS_STAGES = [
+  { key: "submitted", label: "Submitted", icon: "\u{1F4E4}" },
+  { key: "under_review", label: "Under Review", icon: "\u{1F50D}" },
+  { key: "comments", label: "Comments Issued", icon: "\u{1F4AC}" },
+  { key: "resubmitted", label: "Resubmitted", icon: "\u{1F504}" },
+  { key: "approved", label: "Approved", icon: "\u2705" },
+];
+
+const DEMO_PROJECTS = [
+  {
+    id: "EES-2026-047",
+    name: "Kailua ADU \u2014 Lot 12 Hamakua Dr",
+    type: "ADU",
+    service: "Full Permit Set + ePlans",
+    status: "active",
+    eplansStage: "comments",
+    progress: 60,
+    startDate: "2026-01-15",
+    estCompletion: "2026-03-20",
+    lastUpdate: "2026-02-25",
+    notes: "County comments received on structural details. Revisions in progress \u2014 targeting resubmission by Feb 28.",
+    files: [
+      { name: "Permit Set v2.pdf", size: "4.2 MB", date: "2026-02-20" },
+      { name: "County Comments.pdf", size: "890 KB", date: "2026-02-25" },
+      { name: "Site Survey.pdf", size: "2.1 MB", date: "2026-01-15" },
+    ]
+  },
+  {
+    id: "EES-2026-044",
+    name: "Kapolei Commercial TI \u2014 Suite 200",
+    type: "Commercial",
+    service: "ePlans Coordination",
+    status: "active",
+    eplansStage: "under_review",
+    progress: 40,
+    startDate: "2026-02-01",
+    estCompletion: "2026-04-15",
+    lastUpdate: "2026-02-22",
+    notes: "Plans submitted to ePlans on Feb 18. Currently in DPP queue \u2014 estimated 2-3 weeks for initial review.",
+    files: [
+      { name: "TI Permit Set v1.pdf", size: "6.8 MB", date: "2026-02-18" },
+      { name: "Floor Plan Markup.pdf", size: "1.4 MB", date: "2026-02-01" },
+    ]
+  },
+  {
+    id: "EES-2026-039",
+    name: "Manoa Residence \u2014 Full Renovation",
+    type: "Residential",
+    service: "Full Permit Set + ePlans",
+    status: "active",
+    eplansStage: "resubmitted",
+    progress: 80,
+    startDate: "2025-11-10",
+    estCompletion: "2026-03-05",
+    lastUpdate: "2026-02-24",
+    notes: "Resubmitted with all corrections addressed. Awaiting final review \u2014 typically 1-2 weeks.",
+    files: [
+      { name: "Permit Set v3 FINAL.pdf", size: "5.6 MB", date: "2026-02-24" },
+      { name: "Structural Calcs.pdf", size: "3.2 MB", date: "2026-01-10" },
+      { name: "County Comments R1.pdf", size: "1.1 MB", date: "2026-01-28" },
+      { name: "County Comments R2.pdf", size: "780 KB", date: "2026-02-15" },
+    ]
+  },
+  {
+    id: "EES-2025-031",
+    name: "Ewa Beach Duplex \u2014 New Construction",
+    type: "Residential",
+    service: "Full Permit Set + ePlans",
+    status: "completed",
+    eplansStage: "approved",
+    progress: 100,
+    startDate: "2025-08-15",
+    estCompletion: "2025-12-01",
+    lastUpdate: "2025-11-20",
+    notes: "Permit approved! Final approved set available for download.",
+    files: [
+      { name: "APPROVED Permit Set.pdf", size: "7.2 MB", date: "2025-11-20" },
+    ]
+  },
+  {
+    id: "EES-2025-028",
+    name: "Wahiawa Retail \u2014 ADA Upgrades",
+    type: "Commercial",
+    service: "Plan Revisions",
+    status: "completed",
+    eplansStage: "approved",
+    progress: 100,
+    startDate: "2025-07-01",
+    estCompletion: "2025-09-15",
+    lastUpdate: "2025-09-10",
+    notes: "Completed. ADA compliance plans approved.",
+    files: [
+      { name: "APPROVED ADA Plans.pdf", size: "3.8 MB", date: "2025-09-10" },
+    ]
+  },
+];
+
+const styles = {
+  app: {
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    minHeight: "100vh",
+    background: "#F0F6FB",
+    color: "#3D5468",
+  },
+  // Login
+  loginWrap: {
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "linear-gradient(180deg, #FFFFFF 0%, #F0F6FB 40%, #EAF4FB 100%)",
+    padding: 20,
+  },
+  loginCard: {
+    background: "#FFF",
+    borderRadius: 16,
+    padding: "48px 40px",
+    maxWidth: 420,
+    width: "100%",
+    boxShadow: "0 8px 40px rgba(26,107,156,0.08)",
+    border: "1px solid #E2EBF0",
+  },
+  loginLogo: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 32,
+  },
+  logoMark: {
+    width: 40,
+    height: 40,
+    background: "linear-gradient(135deg, #2B88BF, #5BA4D4)",
+    borderRadius: 10,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontFamily: "'JetBrains Mono', monospace",
+    fontWeight: 700,
+    fontSize: 13,
+    color: "white",
+  },
+  loginTitle: {
+    fontFamily: "'Lora', serif",
+    fontSize: 28,
+    fontWeight: 700,
+    color: "#1C3A52",
+    marginBottom: 8,
+  },
+  loginSub: {
+    fontSize: 15,
+    color: "#7A95A8",
+    marginBottom: 28,
+  },
+  input: {
+    width: "100%",
+    padding: "13px 16px",
+    border: "1.5px solid #E2EBF0",
+    borderRadius: 10,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 14,
+    color: "#3D5468",
+    outline: "none",
+    marginBottom: 14,
+    transition: "border-color 0.3s",
+    boxSizing: "border-box",
+  },
+  btnPrimary: {
+    width: "100%",
+    padding: "14px 24px",
+    background: "linear-gradient(135deg, #2B88BF, #5BA4D4)",
+    color: "white",
+    border: "none",
+    borderRadius: 10,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 15,
+    fontWeight: 600,
+    cursor: "pointer",
+    transition: "transform 0.2s, box-shadow 0.2s",
+    boxShadow: "0 4px 18px rgba(43,136,191,0.25)",
+  },
+  demoBadge: {
+    marginTop: 20,
+    padding: "12px 16px",
+    background: "#EAF4FB",
+    borderRadius: 10,
+    fontSize: 12,
+    color: "#7A95A8",
+    textAlign: "center",
+    lineHeight: 1.5,
+  },
+  // Sidebar
+  sidebar: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    width: 260,
+    background: "#1C3A52",
+    padding: "24px 0",
+    display: "flex",
+    flexDirection: "column",
+    zIndex: 50,
+    transition: "transform 0.3s",
+  },
+  sidebarLogo: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    padding: "0 24px",
+    marginBottom: 8,
+  },
+  sidebarLogoName: {
+    fontFamily: "'Lora', serif",
+    fontSize: 18,
+    color: "white",
+    fontWeight: 700,
+  },
+  sidebarLogoSub: {
+    fontSize: 9,
+    letterSpacing: 2,
+    color: "#5BA4D4",
+    textTransform: "uppercase",
+    fontWeight: 600,
+  },
+  firmBadge: {
+    margin: "16px 20px 24px",
+    padding: "14px 16px",
+    background: "rgba(255,255,255,0.06)",
+    borderRadius: 10,
+    border: "1px solid rgba(255,255,255,0.08)",
+  },
+  firmName: {
+    fontSize: 13,
+    fontWeight: 600,
+    color: "white",
+    marginBottom: 2,
+  },
+  firmContact: {
+    fontSize: 11,
+    color: "rgba(255,255,255,0.45)",
+  },
+  navItem: (active) => ({
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    padding: "12px 24px",
+    color: active ? "white" : "rgba(255,255,255,0.5)",
+    background: active ? "rgba(43,136,191,0.2)" : "transparent",
+    borderLeft: active ? "3px solid #5BA4D4" : "3px solid transparent",
+    fontSize: 14,
+    fontWeight: active ? 600 : 400,
+    cursor: "pointer",
+    transition: "all 0.2s",
+    textDecoration: "none",
+  }),
+  // Main
+  main: {
+    marginLeft: 260,
+    padding: "32px 40px",
+    minHeight: "100vh",
+  },
+  topBar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 32,
+  },
+  pageTitle: {
+    fontFamily: "'Lora', serif",
+    fontSize: 28,
+    fontWeight: 700,
+    color: "#1C3A52",
+  },
+  pageSub: {
+    fontSize: 14,
+    color: "#7A95A8",
+    marginTop: 4,
+  },
+  // Stats
+  statsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(4, 1fr)",
+    gap: 18,
+    marginBottom: 32,
+  },
+  statCard: {
+    background: "white",
+    borderRadius: 14,
+    padding: "24px 20px",
+    border: "1px solid #E2EBF0",
+    transition: "box-shadow 0.3s",
+  },
+  statNum: {
+    fontFamily: "'Lora', serif",
+    fontSize: 32,
+    fontWeight: 700,
+    color: "#1C3A52",
+    lineHeight: 1,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: "#A3BDCE",
+    marginTop: 6,
+    fontWeight: 500,
+    letterSpacing: 0.3,
+  },
+  statIcon: {
+    fontSize: 20,
+    marginBottom: 10,
+  },
+  // Project list
+  projectCard: (active) => ({
+    background: active ? "#EAF4FB" : "white",
+    borderRadius: 14,
+    padding: "22px 24px",
+    border: `1.5px solid ${active ? "#A8D4F0" : "#E2EBF0"}`,
+    marginBottom: 12,
+    cursor: "pointer",
+    transition: "all 0.3s",
+    display: "flex",
+    alignItems: "center",
+    gap: 20,
+  }),
+  projectId: {
+    fontFamily: "'JetBrains Mono', monospace",
+    fontSize: 11,
+    color: "#A3BDCE",
+    fontWeight: 500,
+  },
+  projectName: {
+    fontFamily: "'Lora', serif",
+    fontSize: 17,
+    fontWeight: 600,
+    color: "#1C3A52",
+    marginBottom: 4,
+  },
+  badge: (color) => ({
+    display: "inline-block",
+    padding: "4px 12px",
+    borderRadius: 50,
+    fontSize: 11,
+    fontWeight: 600,
+    background: color === "green" ? "#DFF0EA" : color === "blue" ? "#D6ECFA" : color === "orange" ? "#FDE8D0" : "#F0F0F0",
+    color: color === "green" ? "#2D8C6E" : color === "blue" ? "#1A6B9C" : color === "orange" ? "#B85C3A" : "#666",
+    marginRight: 8,
+  }),
+  progressBar: {
+    width: "100%",
+    height: 6,
+    background: "#E2EBF0",
+    borderRadius: 3,
+    overflow: "hidden",
+    marginTop: 10,
+  },
+  progressFill: (pct) => ({
+    width: `${pct}%`,
+    height: "100%",
+    background: pct === 100 ? "linear-gradient(90deg, #2D8C6E, #3BAA87)" : "linear-gradient(90deg, #2B88BF, #5BA4D4)",
+    borderRadius: 3,
+    transition: "width 0.8s ease",
+  }),
+  // Detail view
+  detailPanel: {
+    background: "white",
+    borderRadius: 16,
+    padding: "32px",
+    border: "1px solid #E2EBF0",
+    marginTop: 20,
+  },
+  stageTracker: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "24px 0",
+    position: "relative",
+  },
+  stageItem: (active, past) => ({
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 8,
+    zIndex: 2,
+    flex: 1,
+  }),
+  stageDot: (active, past) => ({
+    width: 40,
+    height: 40,
+    borderRadius: "50%",
+    background: active ? "linear-gradient(135deg, #2B88BF, #5BA4D4)" : past ? "#2D8C6E" : "#E2EBF0",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 18,
+    color: active || past ? "white" : "#A3BDCE",
+    boxShadow: active ? "0 4px 16px rgba(43,136,191,0.3)" : "none",
+    transition: "all 0.4s",
+  }),
+  stageLabel: (active) => ({
+    fontSize: 11,
+    fontWeight: active ? 700 : 500,
+    color: active ? "#1C3A52" : "#A3BDCE",
+    textAlign: "center",
+    letterSpacing: 0.2,
+  }),
+  stageLine: {
+    position: "absolute",
+    top: 43,
+    left: "10%",
+    right: "10%",
+    height: 3,
+    background: "#E2EBF0",
+    zIndex: 1,
+    borderRadius: 2,
+  },
+  fileRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "14px 16px",
+    background: "#F7FAFC",
+    borderRadius: 10,
+    marginBottom: 8,
+    border: "1px solid #E2EBF0",
+    transition: "background 0.2s",
+    cursor: "pointer",
+  },
+  // New project form
+  formSection: {
+    background: "white",
+    borderRadius: 16,
+    padding: "32px",
+    border: "1px solid #E2EBF0",
+  },
+  formGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: 16,
+  },
+  label: {
+    display: "block",
+    fontSize: 13,
+    fontWeight: 600,
+    color: "#1C3A52",
+    marginBottom: 6,
+  },
+  select: {
+    width: "100%",
+    padding: "13px 16px",
+    border: "1.5px solid #E2EBF0",
+    borderRadius: 10,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 14,
+    color: "#3D5468",
+    outline: "none",
+    background: "white",
+    appearance: "none",
+    boxSizing: "border-box",
+  },
+  textarea: {
+    width: "100%",
+    padding: "13px 16px",
+    border: "1.5px solid #E2EBF0",
+    borderRadius: 10,
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 14,
+    color: "#3D5468",
+    outline: "none",
+    resize: "vertical",
+    minHeight: 100,
+    boxSizing: "border-box",
+  },
+  uploadZone: {
+    border: "2px dashed #D6ECFA",
+    borderRadius: 14,
+    padding: "40px 24px",
+    textAlign: "center",
+    background: "#FAFCFE",
+    cursor: "pointer",
+    transition: "border-color 0.3s, background 0.3s",
+  },
+  logoutBtn: {
+    padding: "10px 16px",
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: 8,
+    color: "rgba(255,255,255,0.5)",
+    fontSize: 12,
+    fontWeight: 500,
+    cursor: "pointer",
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+  },
+};
+
+// Login Screen
+function LoginScreen({ onLogin }) {
+  const [user, setUser] = useState("");
+  const [pass, setPass] = useState("");
+  const [error, setError] = useState("");
+  const [focused, setFocused] = useState(null);
+
+  const handleLogin = () => {
+    if (user === "demo" && pass === "demo") {
+      onLogin(DEMO_FIRMS["demo"]);
+    } else {
+      setError("Invalid credentials. Try demo / demo");
+    }
+  };
+
+  return (
+    <div style={styles.loginWrap}>
+      <div style={styles.loginCard}>
+        <div style={styles.loginLogo}>
+          <div style={styles.logoMark}>EES</div>
+          <div>
+            <div style={{ fontFamily: "'Lora', serif", fontSize: 18, fontWeight: 700, color: "#1C3A52" }}>Easy</div>
+            <div style={{ fontSize: 9, letterSpacing: 2, color: "#2B88BF", textTransform: "uppercase", fontWeight: 600 }}>Engineering Services</div>
+          </div>
+        </div>
+        <h1 style={styles.loginTitle}>Firm Portal</h1>
+        <p style={styles.loginSub}>Track your projects, download plans, and submit new work.</p>
+
+        <input
+          style={{ ...styles.input, borderColor: focused === "user" ? "#5BA4D4" : "#E2EBF0" }}
+          placeholder="Username"
+          value={user}
+          onChange={e => { setUser(e.target.value); setError(""); }}
+          onFocus={() => setFocused("user")}
+          onBlur={() => setFocused(null)}
+          onKeyDown={e => e.key === "Enter" && handleLogin()}
+        />
+        <input
+          style={{ ...styles.input, borderColor: focused === "pass" ? "#5BA4D4" : "#E2EBF0" }}
+          placeholder="Password"
+          type="password"
+          value={pass}
+          onChange={e => { setPass(e.target.value); setError(""); }}
+          onFocus={() => setFocused("pass")}
+          onBlur={() => setFocused(null)}
+          onKeyDown={e => e.key === "Enter" && handleLogin()}
+        />
+
+        {error && <div style={{ color: "#B85C3A", fontSize: 13, marginBottom: 12, fontWeight: 500 }}>{error}</div>}
+
+        <button style={styles.btnPrimary} onClick={handleLogin} onMouseOver={e => e.target.style.transform="translateY(-1px)"} onMouseOut={e => e.target.style.transform="none"}>
+          Sign In &rarr;
+        </button>
+
+        <div style={styles.demoBadge}>
+          <strong>Demo Login:</strong> username <code style={{ background: "#D6ECFA", padding: "2px 6px", borderRadius: 4, fontFamily: "'JetBrains Mono', monospace" }}>demo</code> / password <code style={{ background: "#D6ECFA", padding: "2px 6px", borderRadius: 4, fontFamily: "'JetBrains Mono', monospace" }}>demo</code>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ePlans Stage Tracker
+function EplansTracker({ currentStage }) {
+  const currentIdx = EPLANS_STAGES.findIndex(s => s.key === currentStage);
+  return (
+    <div style={styles.stageTracker}>
+      <div style={styles.stageLine} />
+      {EPLANS_STAGES.map((stage, i) => {
+        const isPast = i < currentIdx;
+        const isActive = i === currentIdx;
+        return (
+          <div key={stage.key} style={styles.stageItem(isActive, isPast)}>
+            <div style={styles.stageDot(isActive, isPast)}>
+              {isPast ? "\u2713" : stage.icon}
+            </div>
+            <span style={styles.stageLabel(isActive)}>{stage.label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// Project Detail View
+function ProjectDetail({ project, onBack }) {
+  return (
+    <div>
+      <button onClick={onBack} style={{ background: "none", border: "none", color: "#2B88BF", fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 20, fontFamily: "'Plus Jakarta Sans', sans-serif", display: "flex", alignItems: "center", gap: 6 }}>
+        &larr; All Projects
+      </button>
+
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+        <div>
+          <div style={styles.projectId}>{project.id}</div>
+          <h2 style={{ fontFamily: "'Lora', serif", fontSize: 24, fontWeight: 700, color: "#1C3A52", margin: "6px 0 10px" }}>{project.name}</h2>
+          <div style={{ display: "flex", gap: 8 }}>
+            <span style={styles.badge(project.status === "completed" ? "green" : "blue")}>{project.status === "completed" ? "Completed" : "Active"}</span>
+            <span style={styles.badge("orange")}>{project.type}</span>
+            <span style={{ ...styles.badge(""), background: "#F7F7F5" }}>{project.service}</span>
+          </div>
+        </div>
+      </div>
+
+      <div style={styles.detailPanel}>
+        <h3 style={{ fontFamily: "'Lora', serif", fontSize: 18, color: "#1C3A52", marginBottom: 16, fontWeight: 600 }}>ePlans Status</h3>
+        <EplansTracker currentStage={project.eplansStage} />
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, marginTop: 18 }}>
+        <div style={styles.detailPanel}>
+          <h3 style={{ fontFamily: "'Lora', serif", fontSize: 16, color: "#1C3A52", marginBottom: 12, fontWeight: 600 }}>Project Details</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            {[
+              ["Started", project.startDate],
+              ["Est. Completion", project.estCompletion],
+              ["Last Updated", project.lastUpdate],
+              ["Progress", `${project.progress}%`],
+            ].map(([label, val]) => (
+              <div key={label}>
+                <div style={{ fontSize: 11, color: "#A3BDCE", fontWeight: 600, letterSpacing: 0.5, marginBottom: 4 }}>{label}</div>
+                <div style={{ fontSize: 15, color: "#1C3A52", fontWeight: 600 }}>{val}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 18 }}>
+            <div style={{ fontSize: 11, color: "#A3BDCE", fontWeight: 600, letterSpacing: 0.5, marginBottom: 4 }}>Progress</div>
+            <div style={styles.progressBar}><div style={styles.progressFill(project.progress)} /></div>
+          </div>
+        </div>
+
+        <div style={styles.detailPanel}>
+          <h3 style={{ fontFamily: "'Lora', serif", fontSize: 16, color: "#1C3A52", marginBottom: 12, fontWeight: 600 }}>Latest Notes</h3>
+          <p style={{ fontSize: 14, lineHeight: 1.7, color: "#7A95A8" }}>{project.notes}</p>
+        </div>
+      </div>
+
+      <div style={{ ...styles.detailPanel, marginTop: 18 }}>
+        <h3 style={{ fontFamily: "'Lora', serif", fontSize: 16, color: "#1C3A52", marginBottom: 16, fontWeight: 600 }}>Files & Downloads</h3>
+        {project.files.map((f, i) => (
+          <div key={i} style={styles.fileRow} onMouseOver={e => e.currentTarget.style.background="#EAF4FB"} onMouseOut={e => e.currentTarget.style.background="#F7FAFC"}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ fontSize: 20 }}>{"\u{1F4C4}"}</span>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#1C3A52" }}>{f.name}</div>
+                <div style={{ fontSize: 11, color: "#A3BDCE" }}>{f.size} &middot; {f.date}</div>
+              </div>
+            </div>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "#2B88BF", cursor: "pointer" }}>Download &darr;</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// New Project Form
+function NewProjectForm({ onSubmit }) {
+  const [submitted, setSubmitted] = useState(false);
+
+  if (submitted) {
+    return (
+      <div style={{ ...styles.formSection, textAlign: "center", padding: "60px 32px" }}>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>{"\u{1F33A}"}</div>
+        <h2 style={{ fontFamily: "'Lora', serif", fontSize: 24, color: "#1C3A52", marginBottom: 8 }}>Project Submitted!</h2>
+        <p style={{ color: "#7A95A8", fontSize: 15, marginBottom: 24 }}>We'll review your scope and get back to you within 24 hours with a timeline and quote.</p>
+        <button onClick={() => setSubmitted(false)} style={{ ...styles.btnPrimary, width: "auto", padding: "12px 32px", display: "inline-block" }}>Submit Another &rarr;</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={styles.formSection}>
+      <h2 style={{ fontFamily: "'Lora', serif", fontSize: 22, color: "#1C3A52", marginBottom: 4 }}>Submit a New Project</h2>
+      <p style={{ color: "#7A95A8", fontSize: 14, marginBottom: 28 }}>Fill in the details below. We'll respond with a timeline and quote within 24 hours.</p>
+
+      <div style={styles.formGrid}>
+        <div>
+          <label style={styles.label}>Project Name</label>
+          <input style={styles.input} placeholder="e.g., Kailua ADU &mdash; Smith Residence" />
+        </div>
+        <div>
+          <label style={styles.label}>Project Type</label>
+          <select style={styles.select}>
+            <option>Select type...</option>
+            <option>ADU</option>
+            <option>Residential &mdash; New Construction</option>
+            <option>Residential &mdash; Renovation</option>
+            <option>Commercial &mdash; New Construction</option>
+            <option>Commercial &mdash; Tenant Improvement</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label style={styles.label}>Services Needed</label>
+          <select style={styles.select}>
+            <option>Select service...</option>
+            <option>Full Permit Set + ePlans</option>
+            <option>ePlans Coordination Only</option>
+            <option>Plan Revisions / Corrections</option>
+            <option>REVIT Drafting Only</option>
+            <option>Civil Engineering Support</option>
+          </select>
+        </div>
+        <div>
+          <label style={styles.label}>Target Timeline</label>
+          <select style={styles.select}>
+            <option>Select timeline...</option>
+            <option>Rush &mdash; 1-2 weeks</option>
+            <option>Standard &mdash; 3-4 weeks</option>
+            <option>Flexible &mdash; 4+ weeks</option>
+          </select>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 16 }}>
+        <label style={styles.label}>Project Description & Notes</label>
+        <textarea style={styles.textarea} placeholder="Describe the scope, location, any existing drawings, special requirements..." />
+      </div>
+
+      <div style={{ marginTop: 16 }}>
+        <label style={styles.label}>Upload Files</label>
+        <div style={styles.uploadZone}>
+          <div style={{ fontSize: 32, marginBottom: 8 }}>{"\u{1F4C1}"}</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1C3A52" }}>Drop files here or click to upload</div>
+          <div style={{ fontSize: 12, color: "#A3BDCE", marginTop: 4 }}>Sketches, surveys, existing drawings, PDFs &mdash; up to 25MB each</div>
+        </div>
+      </div>
+
+      <button style={{ ...styles.btnPrimary, marginTop: 24 }} onClick={() => setSubmitted(true)}>
+        Submit Project &rarr;
+      </button>
+    </div>
+  );
+}
+
+// Main Dashboard
+function Dashboard({ firm, onLogout }) {
+  const [page, setPage] = useState("overview");
+  const [selectedProject, setSelectedProject] = useState(null);
+
+  const activeProjects = DEMO_PROJECTS.filter(p => p.status === "active");
+  const completedProjects = DEMO_PROJECTS.filter(p => p.status === "completed");
+
+  const navItems = [
+    { key: "overview", label: "Dashboard", icon: "\u{1F4CA}" },
+    { key: "projects", label: "All Projects", icon: "\u{1F4CB}" },
+    { key: "new", label: "New Project", icon: "\u2795" },
+  ];
+
+  if (selectedProject) {
+    return (
+      <div style={styles.app}>
+        <div style={styles.sidebar}>
+          <div style={styles.sidebarLogo}>
+            <div style={styles.logoMark}>EES</div>
+            <div>
+              <div style={styles.sidebarLogoName}>Easy</div>
+              <div style={styles.sidebarLogoSub}>Engineering Services</div>
+            </div>
+          </div>
+          <div style={styles.firmBadge}>
+            <div style={styles.firmName}>{firm.name}</div>
+            <div style={styles.firmContact}>{firm.contact}</div>
+          </div>
+          {navItems.map(item => (
+            <div key={item.key} style={styles.navItem(false)} onClick={() => { setSelectedProject(null); setPage(item.key); }}>
+              <span>{item.icon}</span> {item.label}
+            </div>
+          ))}
+          <div style={{ flex: 1 }} />
+          <div style={{ padding: "0 20px" }}>
+            <button style={styles.logoutBtn} onClick={onLogout}>Sign Out</button>
+          </div>
+        </div>
+        <div style={styles.main}>
+          <ProjectDetail project={selectedProject} onBack={() => setSelectedProject(null)} />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={styles.app}>
+      <div style={styles.sidebar}>
+        <div style={styles.sidebarLogo}>
+          <div style={styles.logoMark}>EES</div>
+          <div>
+            <div style={styles.sidebarLogoName}>Easy</div>
+            <div style={styles.sidebarLogoSub}>Engineering Services</div>
+          </div>
+        </div>
+        <div style={styles.firmBadge}>
+          <div style={styles.firmName}>{firm.name}</div>
+          <div style={styles.firmContact}>{firm.contact}</div>
+        </div>
+        {navItems.map(item => (
+          <div key={item.key} style={styles.navItem(page === item.key)} onClick={() => setPage(item.key)} onMouseOver={e => { if(page !== item.key) e.currentTarget.style.background="rgba(255,255,255,0.04)"; }} onMouseOut={e => { if(page !== item.key) e.currentTarget.style.background="transparent"; }}>
+            <span>{item.icon}</span> {item.label}
+          </div>
+        ))}
+        <div style={{ flex: 1 }} />
+        <div style={{ padding: "16px 20px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Need help?</div>
+          <a href="https://wa.me/639294142510" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 8, color: "#25D366", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+            {"\u{1F4AC}"} WhatsApp
+          </a>
+        </div>
+        <div style={{ padding: "0 20px 8px" }}>
+          <button style={styles.logoutBtn} onClick={onLogout}>Sign Out</button>
+        </div>
+      </div>
+
+      <div style={styles.main}>
+        {page === "overview" && (
+          <>
+            <div style={styles.topBar}>
+              <div>
+                <h1 style={styles.pageTitle}>Welcome back, {firm.contact.split(",")[0]}</h1>
+                <p style={styles.pageSub}>Here's what's happening with your projects.</p>
+              </div>
+              <button style={{ ...styles.btnPrimary, width: "auto", padding: "12px 24px" }} onClick={() => setPage("new")}>
+                + New Project
+              </button>
+            </div>
+
+            <div style={styles.statsGrid}>
+              {[
+                { icon: "\u{1F4CB}", num: activeProjects.length, label: "Active Projects" },
+                { icon: "\u2705", num: completedProjects.length, label: "Completed" },
+                { icon: "\u{1F4C4}", num: DEMO_PROJECTS.reduce((a, p) => a + p.files.length, 0), label: "Files" },
+                { icon: "\u{1F550}", num: `Since ${firm.since}`, label: "Partner Since" },
+              ].map((s, i) => (
+                <div key={i} style={styles.statCard}>
+                  <div style={styles.statIcon}>{s.icon}</div>
+                  <div style={styles.statNum}>{s.num}</div>
+                  <div style={styles.statLabel}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            <h2 style={{ fontFamily: "'Lora', serif", fontSize: 20, color: "#1C3A52", fontWeight: 600, marginBottom: 16 }}>Active Projects</h2>
+            {activeProjects.map(p => (
+              <div key={p.id} style={styles.projectCard(false)} onClick={() => setSelectedProject(p)} onMouseOver={e => { e.currentTarget.style.borderColor="#A8D4F0"; e.currentTarget.style.boxShadow="0 4px 20px rgba(26,107,156,0.06)"; }} onMouseOut={e => { e.currentTarget.style.borderColor="#E2EBF0"; e.currentTarget.style.boxShadow="none"; }}>
+                <div style={{ flex: 1 }}>
+                  <div style={styles.projectId}>{p.id}</div>
+                  <div style={styles.projectName}>{p.name}</div>
+                  <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
+                    <span style={styles.badge("blue")}>{p.type}</span>
+                    <span style={styles.badge("orange")}>{EPLANS_STAGES.find(s => s.key === p.eplansStage)?.label}</span>
+                  </div>
+                  <div style={styles.progressBar}><div style={styles.progressFill(p.progress)} /></div>
+                </div>
+                <div style={{ textAlign: "right", minWidth: 90 }}>
+                  <div style={{ fontSize: 11, color: "#A3BDCE", marginBottom: 4 }}>Updated</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#1C3A52" }}>{p.lastUpdate}</div>
+                </div>
+              </div>
+            ))}
+
+            {completedProjects.length > 0 && (
+              <>
+                <h2 style={{ fontFamily: "'Lora', serif", fontSize: 20, color: "#1C3A52", fontWeight: 600, margin: "28px 0 16px" }}>Completed</h2>
+                {completedProjects.map(p => (
+                  <div key={p.id} style={styles.projectCard(false)} onClick={() => setSelectedProject(p)} onMouseOver={e => { e.currentTarget.style.borderColor="#B8E0D2"; }} onMouseOut={e => { e.currentTarget.style.borderColor="#E2EBF0"; }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={styles.projectId}>{p.id}</div>
+                      <div style={styles.projectName}>{p.name}</div>
+                      <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
+                        <span style={styles.badge("green")}>{"\u2713"} Approved</span>
+                        <span style={styles.badge("")}>{p.type}</span>
+                      </div>
+                    </div>
+                    <div style={{ textAlign: "right", minWidth: 90 }}>
+                      <div style={{ fontSize: 11, color: "#A3BDCE", marginBottom: 4 }}>Completed</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#2D8C6E" }}>{p.lastUpdate}</div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+          </>
+        )}
+
+        {page === "projects" && (
+          <>
+            <div style={styles.topBar}>
+              <div>
+                <h1 style={styles.pageTitle}>All Projects</h1>
+                <p style={styles.pageSub}>{DEMO_PROJECTS.length} total projects</p>
+              </div>
+              <button style={{ ...styles.btnPrimary, width: "auto", padding: "12px 24px" }} onClick={() => setPage("new")}>
+                + New Project
+              </button>
+            </div>
+            {DEMO_PROJECTS.map(p => (
+              <div key={p.id} style={styles.projectCard(false)} onClick={() => setSelectedProject(p)} onMouseOver={e => { e.currentTarget.style.borderColor="#A8D4F0"; e.currentTarget.style.boxShadow="0 4px 20px rgba(26,107,156,0.06)"; }} onMouseOut={e => { e.currentTarget.style.borderColor="#E2EBF0"; e.currentTarget.style.boxShadow="none"; }}>
+                <div style={{ flex: 1 }}>
+                  <div style={styles.projectId}>{p.id}</div>
+                  <div style={styles.projectName}>{p.name}</div>
+                  <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
+                    <span style={styles.badge(p.status === "completed" ? "green" : "blue")}>{p.status === "completed" ? "\u2713 Approved" : "Active"}</span>
+                    <span style={styles.badge("orange")}>{EPLANS_STAGES.find(s => s.key === p.eplansStage)?.label}</span>
+                    <span style={styles.badge("")}>{p.service}</span>
+                  </div>
+                  {p.status === "active" && <div style={styles.progressBar}><div style={styles.progressFill(p.progress)} /></div>}
+                </div>
+                <div style={{ textAlign: "right", minWidth: 90 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#1C3A52" }}>{p.lastUpdate}</div>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+
+        {page === "new" && (
+          <>
+            <div style={styles.topBar}>
+              <div>
+                <h1 style={styles.pageTitle}>New Project</h1>
+                <p style={styles.pageSub}>Submit a new project for scoping and quote.</p>
+              </div>
+            </div>
+            <NewProjectForm />
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// App Root
+function App() {
+  const [firm, setFirm] = useState(null);
+
+  useEffect(() => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = FONTS_LINK;
+    document.head.appendChild(link);
+  }, []);
+
+  if (!firm) {
+    return <LoginScreen onLogin={setFirm} />;
+  }
+
+  return <Dashboard firm={firm} onLogout={() => setFirm(null)} />;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
