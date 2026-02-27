@@ -162,6 +162,181 @@
 
   .hero-content { max-width: 680px; margin: 0 auto; text-align: center; position: relative; z-index: 3; }
 
+  /* ====== HERO BACKGROUND DOCUMENTS ====== */
+  .hero-doc {
+    position: absolute;
+    z-index: 1;
+    opacity: 0.12;
+    pointer-events: none;
+    animation: fadeUp 1.2s ease 0.3s both;
+  }
+  .hero-doc-left {
+    left: 3%; top: 12%;
+    transform: rotate(-8deg);
+  }
+  .hero-doc-right {
+    right: 3%; top: 15%;
+    transform: rotate(6deg);
+  }
+  /* Blueprint / floor plan */
+  .blueprint {
+    width: 320px; height: 400px;
+    background: var(--cloud);
+    border: 2px solid var(--ocean);
+    border-radius: 6px;
+    padding: 20px;
+    position: relative;
+    box-shadow: 0 8px 40px rgba(26,107,156,0.15);
+  }
+  .blueprint::before {
+    content: 'PERMIT PLAN SET';
+    position: absolute; top: 12px; left: 20px;
+    font-family: var(--font-mono);
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--ocean);
+  }
+  .blueprint::after {
+    content: 'EES-2026-047';
+    position: absolute; top: 12px; right: 20px;
+    font-family: var(--font-mono);
+    font-size: 8px; font-weight: 500;
+    color: var(--ocean-mid);
+  }
+  .bp-grid {
+    width: 100%; height: 100%;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 19px, var(--ocean-pale) 19px, var(--ocean-pale) 20px),
+      repeating-linear-gradient(90deg, transparent, transparent 19px, var(--ocean-pale) 19px, var(--ocean-pale) 20px);
+    position: relative; margin-top: 14px; border: 1px solid var(--ocean-pale);
+  }
+  /* Floor plan shapes inside the grid */
+  .bp-room {
+    position: absolute;
+    border: 2px solid var(--ocean-mid);
+    background: rgba(43,136,191,0.04);
+  }
+  .bp-room::after {
+    font-family: var(--font-mono);
+    font-size: 7px; color: var(--ocean);
+    position: absolute; bottom: 3px; left: 4px;
+    letter-spacing: 0.5px;
+  }
+  .bp-r1 { top: 8%; left: 5%; width: 55%; height: 40%; }
+  .bp-r1::after { content: 'LIVING / KITCHEN'; }
+  .bp-r2 { top: 8%; right: 5%; width: 32%; height: 22%; }
+  .bp-r2::after { content: 'BEDROOM'; }
+  .bp-r3 { top: 34%; right: 5%; width: 32%; height: 14%; }
+  .bp-r3::after { content: 'BATH'; }
+  .bp-r4 { bottom: 8%; left: 5%; width: 40%; height: 35%; }
+  .bp-r4::after { content: 'BEDROOM 2'; }
+  .bp-r5 { bottom: 8%; right: 5%; width: 48%; height: 16%; }
+  .bp-r5::after { content: 'LANAI'; border-style: dashed; }
+  .bp-dim {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 7px; color: var(--ocean-mid);
+  }
+  .bp-dim-top { top: 2px; left: 50%; transform: translateX(-50%); }
+  .bp-dim-side { top: 50%; left: -2px; transform: translateY(-50%) rotate(-90deg); }
+
+  /* ePlans document */
+  .eplans-doc {
+    width: 280px; height: 370px;
+    background: var(--cloud);
+    border: 2px solid var(--ocean-pale);
+    border-radius: 6px;
+    padding: 20px;
+    position: relative;
+    box-shadow: 0 8px 40px rgba(26,107,156,0.12);
+  }
+  .eplans-header {
+    font-family: var(--font-mono);
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 2px; color: var(--ocean);
+    text-transform: uppercase;
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid var(--ocean-pale);
+    margin-bottom: 14px;
+  }
+  .eplans-field {
+    margin-bottom: 10px;
+  }
+  .eplans-label {
+    font-family: var(--font-mono);
+    font-size: 7px; font-weight: 600;
+    letter-spacing: 1px; color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .eplans-val {
+    height: 8px;
+    background: var(--ocean-whisper);
+    border-radius: 3px;
+    width: 80%;
+  }
+  .eplans-val.short { width: 50%; }
+  .eplans-val.med { width: 65%; }
+  /* Stage tracker inside doc */
+  .eplans-stages {
+    display: flex; gap: 6px; align-items: center;
+    margin: 16px 0 12px;
+  }
+  .eplans-stage-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 700;
+  }
+  .eplans-stage-dot.done {
+    background: var(--seafoam);
+    color: white;
+  }
+  .eplans-stage-dot.current {
+    background: linear-gradient(135deg, var(--ocean), var(--ocean-mid));
+    color: white;
+    box-shadow: 0 2px 8px rgba(43,136,191,0.3);
+  }
+  .eplans-stage-dot.pending {
+    background: var(--border);
+    color: var(--text-muted);
+  }
+  .eplans-stage-line {
+    flex: 1; height: 2px;
+    background: var(--border);
+  }
+  .eplans-stage-line.done { background: var(--seafoam); }
+  /* Approved stamp */
+  .eplans-stamp {
+    position: absolute;
+    bottom: 30px; right: 20px;
+    width: 90px; height: 90px;
+    border: 3px solid #2D8C6E;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transform: rotate(-15deg);
+  }
+  .eplans-stamp-text {
+    font-family: var(--font-heading);
+    font-size: 13px; font-weight: 700;
+    color: #2D8C6E;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 1200px) {
+    .hero-doc-left { left: -2%; }
+    .hero-doc-right { right: -2%; }
+  }
+  @media (max-width: 1024px) {
+    .hero-doc { opacity: 0.06; }
+    .blueprint { width: 240px; height: 300px; }
+    .eplans-doc { width: 220px; height: 290px; }
+  }
+  @media (max-width: 768px) {
+    .hero-doc { display: none; }
+  }
+
   .hero-badge {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 8px 18px;
@@ -884,6 +1059,46 @@
   <div class="hero-deco-1"></div>
   <div class="hero-deco-2"></div>
   <div class="hero-deco-3"></div>
+
+  <!-- Background: Blueprint / Floor Plan (left) -->
+  <div class="hero-doc hero-doc-left">
+    <div class="blueprint">
+      <div class="bp-grid">
+        <div class="bp-room bp-r1"></div>
+        <div class="bp-room bp-r2"></div>
+        <div class="bp-room bp-r3"></div>
+        <div class="bp-room bp-r4"></div>
+        <div class="bp-room bp-r5"></div>
+        <span class="bp-dim bp-dim-top">32'-0"</span>
+        <span class="bp-dim bp-dim-side">24'-0"</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Background: ePlans Document (right) -->
+  <div class="hero-doc hero-doc-right">
+    <div class="eplans-doc">
+      <div class="eplans-header">City & County of Honolulu<br>ePlans Submission</div>
+      <div class="eplans-field"><div class="eplans-label">Project</div><div class="eplans-val"></div></div>
+      <div class="eplans-field"><div class="eplans-label">Permit No.</div><div class="eplans-val short"></div></div>
+      <div class="eplans-field"><div class="eplans-label">Applicant</div><div class="eplans-val med"></div></div>
+      <div class="eplans-field"><div class="eplans-label">Location</div><div class="eplans-val"></div></div>
+      <div class="eplans-stages">
+        <div class="eplans-stage-dot done">&#10003;</div>
+        <div class="eplans-stage-line done"></div>
+        <div class="eplans-stage-dot done">&#10003;</div>
+        <div class="eplans-stage-line done"></div>
+        <div class="eplans-stage-dot done">&#10003;</div>
+        <div class="eplans-stage-line done"></div>
+        <div class="eplans-stage-dot done">&#10003;</div>
+        <div class="eplans-stage-line done"></div>
+        <div class="eplans-stage-dot current">&#10003;</div>
+      </div>
+      <div class="eplans-field"><div class="eplans-label">Status</div><div class="eplans-val short" style="background:var(--seafoam-light);"></div></div>
+      <div class="eplans-stamp"><span class="eplans-stamp-text">Approved</span></div>
+    </div>
+  </div>
+
   <div class="hero-content">
     <div class="hero-badge"><span class="badge-dot"></span>Serving Hawaii's Housing Community</div>
     <h1>Expert Permit Drafting &<br><span class="accent">ePlans Coordination</span><br>for Hawai'i Professionals</h1>
