@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Elite Engineering Services | Permit Drafting & Coordination — Hawai'i</title>
+<title>Pacific Bim Engineering Services | Permit Drafting & Coordination — Hawai'i</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -62,25 +62,11 @@
 
   .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; }
   .logo-mark {
-    width: 44px; height: 44px;
-    background: linear-gradient(135deg, var(--ocean), var(--ocean-mid));
+    height: 44px; width: 44px;
     border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-mono);
-    font-weight: 700; font-size: 14px;
-    color: white;
-    letter-spacing: -0.5px;
-    position: relative; overflow: hidden;
+    object-fit: cover;
     box-shadow: 0 2px 12px rgba(43,136,191,0.25);
   }
-  .logo-mark::after {
-    content: '';
-    position: absolute; top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-    animation: shimmer 5s ease-in-out infinite;
-  }
-  @keyframes shimmer { 0%,100%{left:-100%} 50%{left:100%} }
 
   .logo-text { display: flex; flex-direction: column; }
   .logo-name {
@@ -197,7 +183,7 @@
     color: var(--ocean);
   }
   .blueprint::after {
-    content: 'EES-2026-047';
+    content: 'PBES-2026-047';
     position: absolute; top: 12px; right: 20px;
     font-family: var(--font-mono);
     font-size: 8px; font-weight: 500;
@@ -1037,9 +1023,9 @@
 <!-- NAV -->
 <nav id="navbar">
   <a href="#" class="logo">
-    <div class="logo-mark">EES</div>
+    <img class="logo-mark" src="/logo.jpg" alt="Pacific Bim Engineering Services">
     <div class="logo-text">
-      <span class="logo-name">Elite</span>
+      <span class="logo-name">Pacific Bim</span>
       <span class="logo-sub">Engineering Services</span>
     </div>
   </a>
@@ -1157,7 +1143,7 @@
   <div class="audience-header reveal">
     <p class="section-label">Who We Serve</p>
     <h2 class="section-title">Built for Hawai'i's Design & Build Professionals</h2>
-    <p class="section-desc">Solo practitioner or large firm — Elite scales to fit your project pipeline.</p>
+    <p class="section-desc">Solo practitioner or large firm — Pacific Bim scales to fit your project pipeline.</p>
   </div>
   <div class="audience-grid">
     <div class="audience-card reveal"><div class="audience-icon">🏛️</div><h3>Architects & Engineers</h3><p>Outsource permit drafting, REVIT plans, and ePlans coordination so your team can focus on design and analysis.</p></div>
@@ -1186,7 +1172,7 @@
 <!-- TRUST -->
 <section class="trust" id="trust">
   <div class="trust-header reveal">
-    <p class="section-label">Why Elite</p>
+    <p class="section-label">Why Pacific Bim</p>
     <h2 class="section-title">Credibility You Can Count On</h2>
     <p class="section-desc">We specialize in one thing: Hawai'i permits done right.</p>
   </div>
@@ -1294,8 +1280,8 @@
   <div class="footer-inner">
     <div class="footer-brand">
       <a href="#" class="logo">
-        <div class="logo-mark" style="width:36px;height:36px;font-size:12px;">EES</div>
-        <div class="logo-text"><span class="logo-name" style="font-size:17px;">Elite</span><span class="logo-sub" style="font-size:9px;">Engineering Services</span></div>
+        <img class="logo-mark" src="/logo.jpg" alt="Pacific Bim Engineering Services" style="width:36px;height:36px;">
+        <div class="logo-text"><span class="logo-name" style="font-size:17px;">Pacific Bim</span><span class="logo-sub" style="font-size:9px;">Engineering Services</span></div>
       </a>
       <p style="margin-top:12px;">Expert permit drafting and ePlans coordination for Hawai'i's design and engineering community. 🌺</p>
     </div>
@@ -1313,7 +1299,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <span>© 2026 Elite Engineering Services. All rights reserved.</span>
+    <span>© 2026 Pacific Bim Engineering Services. All rights reserved.</span>
     <span>Hawai'i 🏝️</span>
   </div>
 </footer>
@@ -1393,7 +1379,7 @@
   // ====== TAWK.TO LIVE CHAT ======
   // Replace 'YOUR_TAWK_PROPERTY_ID' and 'YOUR_TAWK_WIDGET_ID' with actual IDs from https://dashboard.tawk.to
   // 1. Sign up free at tawk.to
-  // 2. Create a property for Elite Engineering Services
+  // 2. Create a property for Pacific Bim Engineering Services
   // 3. Go to Administration > Chat Widget > Copy the property ID and widget ID
   // 4. Replace the placeholders below
   /*
@@ -1424,7 +1410,7 @@
       return;
     }
 
-    const subject = encodeURIComponent('Elite Engineering Services — New Inquiry from ' + name);
+    const subject = encodeURIComponent('Pacific Bim Engineering Services — New Inquiry from ' + name);
     const body = encodeURIComponent(
       'Name: ' + name + '\n' +
       'Phone: ' + (phone || 'Not provided') + '\n' +

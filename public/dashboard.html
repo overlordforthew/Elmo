@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Firm Portal | Elite Engineering Services</title>
+  <title>Firm Portal | Pacific Bim Engineering Services</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -34,22 +34,11 @@
     .site-nav.scrolled { padding: 10px 48px; box-shadow: 0 4px 30px rgba(26,107,156,0.06); }
     .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; }
     .logo-mark {
-      width: 44px; height: 44px;
-      background: linear-gradient(135deg, var(--ocean), var(--ocean-mid));
+      height: 44px; width: 44px;
       border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-mono); font-weight: 700; font-size: 14px;
-      color: white; letter-spacing: -0.5px;
-      position: relative; overflow: hidden;
+      object-fit: cover;
       box-shadow: 0 2px 12px rgba(43,136,191,0.25);
     }
-    .logo-mark::after {
-      content: ''; position: absolute; top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-      animation: shimmer 5s ease-in-out infinite;
-    }
-    @keyframes shimmer { 0%,100%{left:-100%} 50%{left:100%} }
     .logo-text { display: flex; flex-direction: column; }
     .logo-name { font-family: var(--font-heading); font-size: 20px; color: var(--heading); font-weight: 700; letter-spacing: 0.5px; line-height: 1; }
     .logo-sub { font-size: 10px; letter-spacing: 2.5px; color: var(--ocean); text-transform: uppercase; font-weight: 600; margin-top: 3px; }
@@ -84,9 +73,9 @@
 <body>
   <div class="site-nav" id="siteNavbar">
     <a href="/" class="logo">
-      <div class="logo-mark">EES</div>
+      <img class="logo-mark" src="/logo.jpg" alt="Pacific Bim Engineering Services">
       <div class="logo-text">
-        <span class="logo-name">Elite</span>
+        <span class="logo-name">Pacific Bim</span>
         <span class="logo-sub">Engineering Services</span>
       </div>
     </a>
@@ -128,7 +117,7 @@ const EPLANS_STAGES = [
 
 const DEMO_PROJECTS = [
   {
-    id: "EES-2026-047",
+    id: "PBES-2026-047",
     name: "Kailua ADU \u2014 Lot 12 Hamakua Dr",
     type: "ADU",
     service: "Full Permit Set + ePlans",
@@ -146,7 +135,7 @@ const DEMO_PROJECTS = [
     ]
   },
   {
-    id: "EES-2026-044",
+    id: "PBES-2026-044",
     name: "Kapolei Commercial TI \u2014 Suite 200",
     type: "Commercial",
     service: "ePlans Coordination",
@@ -163,7 +152,7 @@ const DEMO_PROJECTS = [
     ]
   },
   {
-    id: "EES-2026-039",
+    id: "PBES-2026-039",
     name: "Manoa Residence \u2014 Full Renovation",
     type: "Residential",
     service: "Full Permit Set + ePlans",
@@ -182,7 +171,7 @@ const DEMO_PROJECTS = [
     ]
   },
   {
-    id: "EES-2025-031",
+    id: "PBES-2025-031",
     name: "Ewa Beach Duplex \u2014 New Construction",
     type: "Residential",
     service: "Full Permit Set + ePlans",
@@ -198,7 +187,7 @@ const DEMO_PROJECTS = [
     ]
   },
   {
-    id: "EES-2025-028",
+    id: "PBES-2025-028",
     name: "Wahiawa Retail \u2014 ADA Upgrades",
     type: "Commercial",
     service: "Plan Revisions",
@@ -249,15 +238,8 @@ const styles = {
   logoMark: {
     width: 40,
     height: 40,
-    background: "linear-gradient(135deg, #2B88BF, #5BA4D4)",
     borderRadius: 10,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontFamily: "'JetBrains Mono', monospace",
-    fontWeight: 700,
-    fontSize: 13,
-    color: "white",
+    objectFit: "cover",
   },
   loginTitle: {
     fontFamily: "'Lora', serif",
@@ -630,9 +612,9 @@ function LoginScreen({ onLogin }) {
     <div style={styles.loginWrap}>
       <div style={styles.loginCard}>
         <div style={styles.loginLogo}>
-          <div style={styles.logoMark}>EES</div>
+          <img src="/logo.jpg" alt="Pacific Bim Engineering Services" style={styles.logoMark} />
           <div>
-            <div style={{ fontFamily: "'Lora', serif", fontSize: 18, fontWeight: 700, color: "#1C3A52" }}>Elite</div>
+            <div style={{ fontFamily: "'Lora', serif", fontSize: 18, fontWeight: 700, color: "#1C3A52" }}>Pacific Bim</div>
             <div style={{ fontSize: 9, letterSpacing: 2, color: "#2B88BF", textTransform: "uppercase", fontWeight: 600 }}>Engineering Services</div>
           </div>
         </div>
@@ -866,9 +848,9 @@ function Dashboard({ firm, onLogout }) {
       <div style={styles.app}>
         <div style={styles.sidebar}>
           <div style={styles.sidebarLogo}>
-            <div style={styles.logoMark}>EES</div>
+            <img src="/logo.jpg" alt="Pacific Bim Engineering Services" style={styles.logoMark} />
             <div>
-              <div style={styles.sidebarLogoName}>Elite</div>
+              <div style={styles.sidebarLogoName}>Pacific Bim</div>
               <div style={styles.sidebarLogoSub}>Engineering Services</div>
             </div>
           </div>
@@ -897,9 +879,9 @@ function Dashboard({ firm, onLogout }) {
     <div style={styles.app}>
       <div style={styles.sidebar}>
         <div style={styles.sidebarLogo}>
-          <div style={styles.logoMark}>EES</div>
+          <img src="/logo.jpg" alt="Pacific Bim Engineering Services" style={styles.logoMark} />
           <div>
-            <div style={styles.sidebarLogoName}>Elite</div>
+            <div style={styles.sidebarLogoName}>Pacific Bim</div>
             <div style={styles.sidebarLogoSub}>Engineering Services</div>
           </div>
         </div>
