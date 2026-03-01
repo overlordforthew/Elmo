@@ -104,48 +104,48 @@ const FONTS_LINK = "https://fonts.googleapis.com/css2?family=Lora:wght@400;500;6
 const PROJECTS = [
   {
     id: 1,
-    name: "Kailua ADU — Hamakua Drive",
-    type: "ADU",
+    name: "Ahuimanu Residence — Unit H",
+    type: "Residential",
     service: "Full Permit Set + ePlans",
-    location: "Kailua",
-    sqft: "640 sq ft",
-    turnaround: "4 weeks",
-    year: "2025",
+    location: "Kaneohe",
+    sqft: "~2,400 sq ft",
+    turnaround: "6 weeks",
+    year: "2020",
     status: "Approved",
-    description: "Detached 1BR/1BA accessory dwelling unit on an existing residential lot. Full REVIT permit set including site plan, floor plan, elevations, sections, and electrical layout. ePlans submitted and approved with zero resubmissions.",
-    highlights: ["Zero resubmissions", "REVIT-native plans", "Complete electrical layout"],
-    gradient: "linear-gradient(135deg, #A8D4F0 0%, #5BA4D4 50%, #1A6B9C 100%)",
-    icon: "\u{1F3E0}",
+    description: "New 2-story single-family detached dwelling in the Ahuimanu subdivision. Complete 15-sheet permit set including site plan, ground and second floor plans, all four elevations, wall sections, structural details, electrical layout, and plumbing riser diagrams. REVIT-native plans submitted through ePlans and approved by the City & County of Honolulu.",
+    highlights: ["15-sheet permit set", "2-story new construction", "4BR / 2BA layout", "Zero resubmissions"],
+    image: "/projects/unit-h-elevation.jpg",
+    icon: "\u{1F3E1}",
   },
   {
     id: 2,
-    name: "Kapolei Retail TI — Suite 200",
-    type: "Commercial",
+    name: "Ahuimanu Multi-Family — Site Development",
+    type: "Residential",
     service: "Full Permit Set + ePlans",
-    location: "Kapolei",
-    sqft: "2,800 sq ft",
-    turnaround: "6 weeks",
-    year: "2025",
+    location: "Kaneohe",
+    sqft: "65,701 sq ft lot",
+    turnaround: "8 weeks",
+    year: "2020",
     status: "Approved",
-    description: "Full tenant improvement permit set for a retail space conversion. Included ADA compliance plans, fire safety egress, mechanical/electrical coordination, and complete ePlans management through final approval.",
-    highlights: ["ADA compliant", "MEP coordination", "Fire egress planning"],
-    gradient: "linear-gradient(135deg, #B8E0D2 0%, #6BC4A6 50%, #2D8C6E 100%)",
-    icon: "\u{1F3E2}",
+    description: "Full site development plan for an 8-unit residential subdivision on a 65,701 sq ft lot in Ahuimanu, Kaneohe. Site plan includes all units A through H, driveway and parking layout, water meter connections, grading, and utility coordination. Multi-department ePlans submission coordinated with DPP, BWS, and fire review.",
+    highlights: ["8-unit subdivision", "65,701 sq ft lot", "Multi-dept. coordination", "Water meter layout"],
+    image: "/projects/unit-h-site-plan.jpg",
+    icon: "\u{1F3D8}",
   },
   {
     id: 3,
-    name: "M\u0101noa Residence — Full Renovation",
+    name: "Ahuimanu Residence — Floor Plans",
     type: "Residential",
     service: "Full Permit Set + ePlans",
-    location: "M\u0101noa",
-    sqft: "1,850 sq ft",
-    turnaround: "5 weeks",
-    year: "2025",
+    location: "Kaneohe",
+    sqft: "~2,400 sq ft",
+    turnaround: "6 weeks",
+    year: "2020",
     status: "Approved",
-    description: "Complete renovation of a 3BR/2BA single-family home including kitchen expansion, new master bath, structural wall removal, and re-roofing. Managed two rounds of County comments and resubmissions.",
-    highlights: ["Structural modifications", "2 rounds of revisions", "Kitchen expansion"],
-    gradient: "linear-gradient(135deg, #F2C4B6 0%, #E8A87C 50%, #C4754A 100%)",
-    icon: "\u{1F528}",
+    description: "Detailed ground and second floor plans for the Unit H residence. Ground floor features garage, covered lanai, living areas, and ADA-accessible bathroom. Second floor includes four bedrooms, two full baths, and open loft area. Plans include complete electrical layout, structural callouts, and finish schedules.",
+    highlights: ["4-bedroom layout", "ADA ground floor", "Complete electrical", "Structural details"],
+    image: "/projects/unit-h-floor-plan.jpg",
+    icon: "\u{1F4D0}",
   },
   {
     id: 4,
@@ -412,9 +412,9 @@ function Portfolio() {
       border: "1px solid #E2EBF0",
       overflow: "hidden", cursor: "pointer",
     },
-    cardImg: (gradient) => ({
+    cardImg: (gradient, hasImage) => ({
       height: 180, width: "100%",
-      background: gradient,
+      background: hasImage ? "#f0f0f0" : gradient,
       position: "relative", overflow: "hidden",
       display: "flex", alignItems: "center", justifyContent: "center",
     }),
@@ -469,9 +469,9 @@ function Portfolio() {
       maxHeight: "90vh", overflow: "auto",
       boxShadow: "0 24px 80px rgba(26,107,156,0.15)",
     },
-    modalImg: (gradient) => ({
+    modalImg: (gradient, hasImage) => ({
       height: 220, width: "100%",
-      background: gradient,
+      background: hasImage ? "#f0f0f0" : gradient,
       borderRadius: "20px 20px 0 0",
       display: "flex", alignItems: "center", justifyContent: "center",
       position: "relative",
@@ -601,8 +601,11 @@ function Portfolio() {
             {filtered.map((p, i) => (
               <div key={p.id} className="pcard" style={{ ...s.card, animation: animateIn ? `fadeUp 0.6s ease ${i * 0.08}s both` : "none" }}
                 onClick={() => setSelectedProject(p)}>
-                <div style={s.cardImg(p.gradient)}>
-                  <span style={s.cardImgIcon}>{p.icon}</span>
+                <div style={s.cardImg(p.gradient, !!p.image)}>
+                  {p.image
+                    ? <img src={p.image} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    : <span style={s.cardImgIcon}>{p.icon}</span>
+                  }
                   <div className="pcard-img-overlay" style={s.cardImgOverlay}>
                     <span style={{ color: "white", fontSize: 14, fontWeight: 600, letterSpacing: 1 }}>View Details &rarr;</span>
                   </div>
@@ -642,8 +645,11 @@ function Portfolio() {
       {selectedProject && (
         <div className="modal-backdrop" style={s.backdrop} onClick={(e) => { if (e.target === e.currentTarget) setSelectedProject(null); }}>
           <div className="modal-content" style={s.modal}>
-            <div style={s.modalImg(selectedProject.gradient)}>
-              <span style={{ fontSize: 72, opacity: 0.25 }}>{selectedProject.icon}</span>
+            <div style={s.modalImg(selectedProject.gradient, !!selectedProject.image)}>
+              {selectedProject.image
+                ? <img src={selectedProject.image} alt={selectedProject.name} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "20px 20px 0 0" }} />
+                : <span style={{ fontSize: 72, opacity: 0.25 }}>{selectedProject.icon}</span>
+              }
               <button style={s.modalClose} onClick={() => setSelectedProject(null)}
                 onMouseOver={e => e.currentTarget.style.background="rgba(255,255,255,0.35)"}
                 onMouseOut={e => e.currentTarget.style.background="rgba(255,255,255,0.2)"}>
