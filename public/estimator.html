@@ -3,10 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Permit Cost Estimator | Pacific Bim Engineering Services</title>
+  <title>Permit Cost Estimator | Pacific Bim Engineering Services — Hawai'i</title>
+  <meta name="description" content="Get an instant permit drafting cost estimate for your Hawai'i project. ADU, residential, and commercial permit plans priced in under 60 seconds. No signup required.">
+  <meta name="keywords" content="permit cost estimator Hawaii, building permit cost, ADU permit price, drafting cost estimate, ePlans coordination cost, permit plan pricing Oahu, how much does a permit cost Hawaii">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://onlydrafting.com/estimator.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://onlydrafting.com/estimator.html">
+  <meta property="og:title" content="Permit Cost Estimator | Pacific Bim Engineering Services">
+  <meta property="og:description" content="Get an instant permit drafting cost estimate for your Hawai'i project. ADU, residential, and commercial plans priced in under 60 seconds.">
+  <meta property="og:image" content="https://onlydrafting.com/logo.jpg">
+  <meta property="og:site_name" content="Pacific Bim Engineering Services">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Permit Cost Estimator | Pacific Bim Engineering Services">
+  <meta name="twitter:description" content="Get an instant permit drafting cost estimate for your Hawai'i project. ADU, residential, and commercial plans priced in under 60 seconds.">
+  <meta name="twitter:image" content="https://onlydrafting.com/logo.jpg">
+
+  <!-- Structured Data: Estimator Tool -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Permit Cost Estimator — Pacific Bim Engineering Services",
+    "description": "Interactive permit drafting cost estimator for Hawai'i building projects.",
+    "url": "https://onlydrafting.com/estimator.html",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "Pacific Bim Engineering Services",
+      "url": "https://onlydrafting.com"
+    },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://onlydrafting.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Estimator", "item": "https://onlydrafting.com/estimator.html" }
+      ]
+    }
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://unpkg.com" crossorigin />
   <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.1/babel.min.js" crossorigin integrity="sha384-Fo0OdKhdnE7y2WmzjOMW4PYjHkkANeu1501pWTqKrzAPeJMFQb4ZTdAA9dtrVUJV"></script>
@@ -71,7 +114,7 @@
   </style>
 </head>
 <body>
-  <nav id="navbar">
+  <nav id="navbar" aria-label="Main navigation">
     <a href="/" class="logo">
       <img class="logo-mark" src="/logo.jpg" alt="Pacific Bim Engineering Services">
       <div class="logo-text">
@@ -89,7 +132,7 @@
     </div>
     <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
   </nav>
-  <div id="root" style="padding-top:76px;"></div>
+  <main id="root" style="padding-top:76px;"></main>
   <script type="text/babel">
 const { useState, useEffect } = React;
 

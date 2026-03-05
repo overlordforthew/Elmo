@@ -3,10 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Project Portfolio | Pacific Bim Engineering Services</title>
+  <title>Project Portfolio | Pacific Bim Engineering Services — Hawai'i Permit Drafting</title>
+  <meta name="description" content="Browse completed permit drafting projects by Pacific Bim Engineering Services. ADU, residential, and commercial permit plans across Hawai'i with a 100% approval rate. 12+ projects, 9 locations served.">
+  <meta name="keywords" content="permit drafting portfolio, Hawaii building permits, ADU permit plans Hawaii, residential permit drawings, commercial permit plans Oahu, ePlans approved projects, REVIT permit sets">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://onlydrafting.com/portfolio.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://onlydrafting.com/portfolio.html">
+  <meta property="og:title" content="Project Portfolio | Pacific Bim Engineering Services">
+  <meta property="og:description" content="Browse completed permit drafting projects across Hawai'i. ADU, residential, and commercial plans with 100% approval rate.">
+  <meta property="og:image" content="https://onlydrafting.com/logo.jpg">
+  <meta property="og:site_name" content="Pacific Bim Engineering Services">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Project Portfolio | Pacific Bim Engineering Services">
+  <meta name="twitter:description" content="Browse completed permit drafting projects across Hawai'i. ADU, residential, and commercial plans with 100% approval rate.">
+  <meta name="twitter:image" content="https://onlydrafting.com/logo.jpg">
+
+  <!-- Structured Data: Portfolio -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Project Portfolio — Pacific Bim Engineering Services",
+    "description": "Completed permit drafting projects across Hawai'i including ADU, residential, and commercial permit plans.",
+    "url": "https://onlydrafting.com/portfolio.html",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "Pacific Bim Engineering Services",
+      "url": "https://onlydrafting.com"
+    },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://onlydrafting.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Portfolio", "item": "https://onlydrafting.com/portfolio.html" }
+      ]
+    }
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://unpkg.com" crossorigin />
   <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.1/babel.min.js" crossorigin integrity="sha384-Fo0OdKhdnE7y2WmzjOMW4PYjHkkANeu1501pWTqKrzAPeJMFQb4ZTdAA9dtrVUJV"></script>
@@ -71,7 +114,7 @@
   </style>
 </head>
 <body>
-  <nav id="navbar">
+  <nav id="navbar" aria-label="Main navigation">
     <a href="/" class="logo">
       <img class="logo-mark" src="/logo.jpg" alt="Pacific Bim Engineering Services">
       <div class="logo-text">
@@ -89,7 +132,7 @@
     </div>
     <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
   </nav>
-  <div id="root" style="padding-top:76px;"></div>
+  <main id="root" style="padding-top:76px;"></main>
   <script type="text/babel">
 const { useState, useEffect, useMemo } = React;
 
