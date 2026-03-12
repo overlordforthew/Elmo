@@ -1469,7 +1469,6 @@ const PROJECTS = [
 ];
 
 const PROJECT_TYPES = ["All", "ADU", "Residential", "Commercial"];
-const SERVICES = ["All", "Full Permit Set + ePlans", "ePlans Coordination", "Plan Revisions"];
 const PAGE_SIZE = 15;
 
 function ImageCarousel({ images, gradient, icon, height, radius }) {
@@ -1516,7 +1515,6 @@ function ImageCarousel({ images, gradient, icon, height, radius }) {
 
 function Portfolio() {
   const [typeFilter, setTypeFilter] = useState("All");
-  const [serviceFilter, setServiceFilter] = useState("All");
   const [selectedProject, setSelectedProject] = useState(null);
   const [animateIn, setAnimateIn] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -1532,10 +1530,9 @@ function Portfolio() {
   const filtered = useMemo(() => {
     return PROJECTS.filter(p => {
       if (typeFilter !== "All" && p.type !== typeFilter) return false;
-      if (serviceFilter !== "All" && p.service !== serviceFilter) return false;
       return true;
     });
-  }, [typeFilter, serviceFilter]);
+  }, [typeFilter]);
 
   const stats = useMemo(() => ({
     total: PROJECTS.length,
@@ -1816,14 +1813,7 @@ function Portfolio() {
               {t === "All" ? "All Types" : t}
             </button>
           ))}
-          <div style={s.filterDivider} />
-          <span style={s.filterLabel}>Service</span>
-          {SERVICES.map(sv => (
-            <button key={sv} className="filter-btn" style={s.filterBtn(serviceFilter === sv)}
-              onClick={() => { setServiceFilter(sv !== 'All' && serviceFilter === sv ? 'All' : sv); setVisibleCount(PAGE_SIZE); }}>
-              {sv === "All" ? "All Services" : sv}
-            </button>
-          ))}
+    
         </div>
 
         {/* COUNT */}
