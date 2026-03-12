@@ -1470,6 +1470,7 @@ const PROJECTS = [
 
 const PROJECT_TYPES = ["All", "ADU", "Residential", "Commercial"];
 const SERVICES = ["All", "Full Permit Set + ePlans", "ePlans Coordination", "Plan Revisions"];
+const PAGE_SIZE = 15;
 
 function ImageCarousel({ images, gradient, icon, height, radius }) {
   const imgs = (images || []).filter(Boolean);
@@ -1518,7 +1519,7 @@ function Portfolio() {
   const [serviceFilter, setServiceFilter] = useState("All");
   const [selectedProject, setSelectedProject] = useState(null);
   const [animateIn, setAnimateIn] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(15);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
     const link = document.createElement("link");
@@ -1535,8 +1536,6 @@ function Portfolio() {
       return true;
     });
   }, [typeFilter, serviceFilter]);
-
-  useEffect(() => { setVisibleCount(15); }, [typeFilter, serviceFilter]);
 
   const stats = useMemo(() => ({
     total: PROJECTS.length,
@@ -1611,8 +1610,9 @@ function Portfolio() {
       padding: "36px 24px 60px",
     },
     filterBar: {
-      display: "flex", flexWrap: "wrap", gap: 10,
+      display: "flex", flexWrap: "nowrap", overflowX: "auto", gap: 8,
       alignItems: "center", marginBottom: 32,
+      WebkitOverflowScrolling: "touch",
     },
     filterLabel: {
       fontSize: 12, fontWeight: 700, letterSpacing: 2,
@@ -1753,6 +1753,18 @@ function Portfolio() {
       boxShadow: "0 4px 18px rgba(43,136,191,0.25)",
       textDecoration: "none", transition: "transform 0.2s",
     },
+    btnOutline: {
+      background: "white",
+      border: "2px solid #2B88BF",
+      color: "#1A6B9C",
+      padding: "12px 36px",
+      borderRadius: 10,
+      fontSize: 15,
+      fontWeight: 600,
+      cursor: "pointer",
+      letterSpacing: 0.3,
+      transition: "all 0.25s",
+    },
     emptyState: {
       textAlign: "center", padding: "60px 20px",
       background: "white", borderRadius: 16,
@@ -1800,7 +1812,7 @@ function Portfolio() {
           <span style={s.filterLabel}>Type</span>
           {PROJECT_TYPES.map(t => (
             <button key={t} className="filter-btn" style={s.filterBtn(typeFilter === t)}
-              onClick={() => setTypeFilter(t)}>
+              onClick={() => { setTypeFilter(t !== 'All' && typeFilter === t ? 'All' : t); setVisibleCount(PAGE_SIZE); }}>
               {t === "All" ? "All Types" : t}
             </button>
           ))}
@@ -1808,7 +1820,7 @@ function Portfolio() {
           <span style={s.filterLabel}>Service</span>
           {SERVICES.map(sv => (
             <button key={sv} className="filter-btn" style={s.filterBtn(serviceFilter === sv)}
-              onClick={() => setServiceFilter(sv)}>
+              onClick={() => { setServiceFilter(sv !== 'All' && serviceFilter === sv ? 'All' : sv); setVisibleCount(PAGE_SIZE); }}>
               {sv === "All" ? "All Services" : sv}
             </button>
           ))}
@@ -1858,20 +1870,8 @@ function Portfolio() {
         {visibleCount < filtered.length && (
           <div style={{ textAlign: "center", marginTop: 16, marginBottom: 8 }}>
             <button
-              onClick={() => setVisibleCount(v => v + 15)}
-              style={{
-                background: "white",
-                border: "2px solid #2B88BF",
-                color: "#1A6B9C",
-                padding: "12px 36px",
-                borderRadius: 10,
-                fontSize: 15,
-                fontWeight: 600,
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                cursor: "pointer",
-                letterSpacing: 0.3,
-                transition: "all 0.25s",
-              }}
+              onClick={() => setVisibleCount(v => v + PAGE_SIZE)}
+              style={s.btnOutline}
               onMouseOver={e => { e.currentTarget.style.background="#2B88BF"; e.currentTarget.style.color="white"; }}
               onMouseOut={e => { e.currentTarget.style.background="white"; e.currentTarget.style.color="#1A6B9C"; }}
             >
