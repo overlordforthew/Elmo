@@ -1607,9 +1607,8 @@ function Portfolio() {
       padding: "36px 24px 60px",
     },
     filterBar: {
-      display: "flex", flexWrap: "nowrap", overflowX: "auto", gap: 8,
+      display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 8,
       alignItems: "center", marginBottom: 32,
-      WebkitOverflowScrolling: "touch",
     },
     filterLabel: {
       fontSize: 12, fontWeight: 700, letterSpacing: 2,
@@ -1806,7 +1805,6 @@ function Portfolio() {
       <div style={s.body}>
         {/* FILTERS */}
         <div style={s.filterBar}>
-          <span style={s.filterLabel}>Type</span>
           {PROJECT_TYPES.map(t => (
             <button key={t} className="filter-btn" style={s.filterBtn(typeFilter === t)}
               onClick={() => { setTypeFilter(t !== 'All' && typeFilter === t ? 'All' : t); setVisibleCount(PAGE_SIZE); }}>
