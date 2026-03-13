@@ -34,3 +34,15 @@ Git push to main → Coolify auto-deploy:
 cd /projects/Elmo && git add -A && git commit -m "message" && git push origin main
 ```
 Coolify container name varies (Coolify-managed).
+
+## Google Search Console Verification (PENDING)
+Must be done under Elmo's Google account (not Gil's).
+
+When Elmo provides his verification token:
+1. Create `public/googleTOKEN.html` with single line content: `google-site-verification: TOKEN`
+2. Commit + push → auto-deploys in ~2 min
+3. Elmo clicks Verify in Search Console
+4. Submit sitemap: `https://onlydrafting.com/sitemap.xml`
+
+How Elmo gets his token: search.google.com/search-console → Add Property →
+URL prefix → https://onlydrafting.com/ → HTML file → copy the filename shown
