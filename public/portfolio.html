@@ -1574,7 +1574,7 @@ function Portfolio() {
     },
     filterBar: {
       display: "flex", flexWrap: "wrap", gap: 10,
-      alignItems: "center", marginBottom: 32,
+      alignItems: "center", justifyContent: "center", marginBottom: 32,
     },
     filterLabel: {
       fontSize: 12, fontWeight: 700, letterSpacing: 2,
@@ -1763,14 +1763,6 @@ function Portfolio() {
             <button key={t} className="filter-btn" style={s.filterBtn(typeFilter === t)}
               onClick={() => setTypeFilter(t)}>
               {t === "All" ? "All Types" : t}
-            </button>
-          ))}
-          <div style={s.filterDivider} />
-          <span style={s.filterLabel}>Service</span>
-          {SERVICES.map(sv => (
-            <button key={sv} className="filter-btn" style={s.filterBtn(serviceFilter === sv)}
-              onClick={() => setServiceFilter(sv)}>
-              {sv === "All" ? "All Services" : sv}
             </button>
           ))}
         </div>
