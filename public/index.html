@@ -1164,7 +1164,7 @@
 <!-- NAV -->
 <nav id="navbar" aria-label="Main navigation">
   <a href="/" class="logo">
-    <img class="logo-mark" src="/logo.webp" alt="Pacific Bim Engineering Services" width="200" height="109">
+    <img class="logo-mark" src="/logo.webp" alt="Pacific Bim Engineering Services" width="200" height="109" onerror="this.onerror=null;this.src='/logo.jpg';">
     <div class="logo-text">
       <span class="logo-name">Pacific Bim</span>
       <span class="logo-sub">Engineering Services</span>
@@ -1426,7 +1426,7 @@
   <div class="footer-inner">
     <div class="footer-brand">
       <a href="/" class="logo">
-        <img class="logo-mark" src="/logo.jpg" alt="Pacific Bim Engineering Services" style="width:36px;height:36px;">
+        <img class="logo-mark" src="/logo.jpg" alt="Pacific Bim Engineering Services" style="width:36px;height:36px;" onerror="this.onerror=null;this.style.display='none';">
         <div class="logo-text"><span class="logo-name" style="font-size:17px;">Pacific Bim</span><span class="logo-sub" style="font-size:9px;">Engineering Services</span></div>
       </a>
       <p style="margin-top:12px;">Expert permit drafting and ePlans coordination for Hawai'i's design and engineering community. 🌺</p>
@@ -1451,72 +1451,110 @@
 </footer>
 
 <script>
-  window.addEventListener('scroll', () => document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50));
-  document.getElementById('navToggle').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) { setTimeout(() => entry.target.classList.add('visible'), i * 80); observer.unobserve(entry.target); }
-    });
-  }, { threshold: 0.12 });
-  reveals.forEach(el => observer.observe(el));
-  document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
+  // Global error handlers — catch unhandled errors and rejections
+  window.onerror = function(msg, src, line, col, err) {
+    console.error('Uncaught error:', msg, 'at', src, line + ':' + col, err);
+  };
+  window.addEventListener('unhandledrejection', function(e) {
+    console.error('Unhandled promise rejection:', e.reason);
+  });
+
+  // Navbar scroll handling
+  var navbar = document.getElementById('navbar');
+  if (navbar) {
+    window.addEventListener('scroll', () => { try { navbar.classList.toggle('scrolled', window.scrollY > 50); } catch(e) { /* scroll handler */ } });
+  }
+  var navToggle = document.getElementById('navToggle');
+  var navLinks = document.getElementById('navLinks');
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => { try { navLinks.classList.toggle('open'); } catch(e) { /* toggle handler */ } });
+  }
+
+  // Intersection Observer for reveal animations
+  var reveals = document.querySelectorAll('.reveal');
+  if (reveals.length && typeof IntersectionObserver !== 'undefined') {
+    try {
+      var observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+          if (entry.isIntersecting) { setTimeout(() => entry.target.classList.add('visible'), i * 80); observer.unobserve(entry.target); }
+        });
+      }, { threshold: 0.12 });
+      reveals.forEach(el => observer.observe(el));
+    } catch (e) {
+      // Fallback: make all elements visible immediately
+      reveals.forEach(el => el.classList.add('visible'));
+    }
+  } else {
+    reveals.forEach(el => el.classList.add('visible'));
+  }
+  document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => { if (navLinks) navLinks.classList.remove('open'); }));
 
   // ====== CHAT WIDGET ======
-  const chatToggle = document.getElementById('chatToggle');
-  const chatPanel = document.getElementById('chatPanel');
-  chatToggle.addEventListener('click', () => {
-    chatToggle.classList.toggle('open');
-    chatPanel.classList.toggle('open');
-  });
-  // Close panel when clicking outside
-  document.addEventListener('click', (e) => {
-    if (!document.getElementById('chatWidget').contains(e.target)) {
-      chatPanel.classList.remove('open');
-      chatToggle.classList.remove('open');
-    }
-  });
+  var chatToggle = document.getElementById('chatToggle');
+  var chatPanel = document.getElementById('chatPanel');
+  if (chatToggle && chatPanel) {
+    chatToggle.addEventListener('click', () => {
+      chatToggle.classList.toggle('open');
+      chatPanel.classList.toggle('open');
+    });
+    // Close panel when clicking outside
+    document.addEventListener('click', (e) => {
+      try {
+        var chatWidget = document.getElementById('chatWidget');
+        if (chatWidget && !chatWidget.contains(e.target)) {
+          chatPanel.classList.remove('open');
+          chatToggle.classList.remove('open');
+        }
+      } catch (e) { /* click-outside handler */ }
+    });
+  }
 
   // ====== AVAILABILITY DETECTION ======
   // Business hours: 9:00 AM – 12:00 AM (midnight) PHT, Mon–Sat
   // PHT = UTC+8
   function checkAvailability() {
-    const now = new Date();
-    // Convert to PHT
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    const pht = new Date(utc + (8 * 3600000));
-    const hour = pht.getHours();
-    const day = pht.getDay(); // 0=Sun, 6=Sat
+    try {
+      var now = new Date();
+      // Convert to PHT
+      var utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+      var pht = new Date(utc + (8 * 3600000));
+      var hour = pht.getHours();
+      var day = pht.getDay(); // 0=Sun, 6=Sat
 
-    // Available: Mon(1)–Sat(6), 9am–midnight(0)
-    const isWorkDay = day >= 1 && day <= 6;
-    const isWorkHour = hour >= 9; // 9am to midnight (hour 0-23, so 9-23)
-    const isOnline = isWorkDay && isWorkHour;
+      // Available: Mon(1)–Sat(6), 9am–midnight(0)
+      var isWorkDay = day >= 1 && day <= 6;
+      var isWorkHour = hour >= 9; // 9am to midnight (hour 0-23, so 9-23)
+      var isOnline = isWorkDay && isWorkHour;
 
-    const onlineDot = document.getElementById('onlineDot');
-    const panelDot = document.getElementById('panelStatusDot');
-    const panelText = document.getElementById('panelStatusText');
-    const panelSub = document.getElementById('panelSubtext');
-    const hoursDisplay = document.getElementById('hoursDisplay');
+      var onlineDot = document.getElementById('onlineDot');
+      var panelDot = document.getElementById('panelStatusDot');
+      var panelText = document.getElementById('panelStatusText');
+      var panelSub = document.getElementById('panelSubtext');
+      var hoursDisplay = document.getElementById('hoursDisplay');
 
-    if (isOnline) {
-      onlineDot.classList.remove('offline');
-      panelDot.classList.remove('offline');
-      panelText.textContent = "We're online";
-      panelSub.textContent = "Typically replies within minutes";
-      hoursDisplay.textContent = "Mon–Sat • Available now 🟢";
-    } else {
-      onlineDot.classList.add('offline');
-      panelDot.classList.add('offline');
-      panelText.textContent = "We're away";
-      panelSub.textContent = "Leave a message — we'll respond ASAP";
-      if (day === 0 && hour < 9) {
-        hoursDisplay.textContent = "Back later today • Sun–Fri, 3pm–6am HST";
-      } else if (day === 0) {
-        hoursDisplay.textContent = "Back tonight • Sun–Fri, 3pm–6am HST";
+      if (!onlineDot || !panelDot || !panelText || !panelSub || !hoursDisplay) return;
+
+      if (isOnline) {
+        onlineDot.classList.remove('offline');
+        panelDot.classList.remove('offline');
+        panelText.textContent = "We're online";
+        panelSub.textContent = "Typically replies within minutes";
+        hoursDisplay.textContent = "Mon\u2013Sat \u2022 Available now \uD83D\uDFE2";
       } else {
-        hoursDisplay.textContent = "Sun–Fri • 3pm–6am HST";
+        onlineDot.classList.add('offline');
+        panelDot.classList.add('offline');
+        panelText.textContent = "We're away";
+        panelSub.textContent = "Leave a message \u2014 we'll respond ASAP";
+        if (day === 0 && hour < 9) {
+          hoursDisplay.textContent = "Back later today \u2022 Sun\u2013Fri, 3pm\u20136am HST";
+        } else if (day === 0) {
+          hoursDisplay.textContent = "Back tonight \u2022 Sun\u2013Fri, 3pm\u20136am HST";
+        } else {
+          hoursDisplay.textContent = "Sun\u2013Fri \u2022 3pm\u20136am HST";
+        }
       }
+    } catch (e) {
+      console.error('Availability check failed:', e);
     }
   }
   checkAvailability();
@@ -1545,32 +1583,54 @@
   */
 
   function submitForm() {
-    const name = document.getElementById('fname').value.trim();
-    const phone = document.getElementById('fphone').value.trim();
-    const email = document.getElementById('femail').value.trim();
-    const notes = document.getElementById('fnotes').value.trim();
-    const services = Array.from(document.querySelectorAll('.svc-check:checked')).map(c => c.value).join(', ');
+    try {
+      var nameEl = document.getElementById('fname');
+      var phoneEl = document.getElementById('fphone');
+      var emailEl = document.getElementById('femail');
+      var notesEl = document.getElementById('fnotes');
 
-    if (!name || !email) {
-      alert('Please enter your name and email.');
-      return;
+      if (!nameEl || !emailEl) {
+        console.error('Contact form fields not found');
+        return;
+      }
+
+      var name = nameEl.value.trim();
+      var phone = phoneEl ? phoneEl.value.trim() : '';
+      var email = emailEl.value.trim();
+      var notes = notesEl ? notesEl.value.trim() : '';
+      var services = Array.from(document.querySelectorAll('.svc-check:checked')).map(c => c.value).join(', ');
+
+      if (!name || !email) {
+        alert('Please enter your name and email.');
+        return;
+      }
+
+      // Basic email format validation
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+
+      var subject = encodeURIComponent('Pacific Bim Engineering Services \u2014 New Inquiry from ' + name);
+      var body = encodeURIComponent(
+        'Name: ' + name + '\n' +
+        'Phone: ' + (phone || 'Not provided') + '\n' +
+        'Email: ' + email + '\n' +
+        'Services: ' + (services || 'Not specified') + '\n' +
+        'Notes: ' + (notes || 'None') + '\n'
+      );
+
+      window.location.href = 'mailto:elmoherrera2014@gmail.com?subject=' + subject + '&body=' + body;
+
+      // Show success message
+      var contactForm = document.querySelector('.contact-form');
+      var success = document.querySelector('.form-success');
+      if (contactForm) contactForm.style.display = 'none';
+      if (success) success.style.display = 'block';
+    } catch (e) {
+      console.error('Form submission failed:', e);
+      alert('Something went wrong. Please try emailing us directly at elmoherrera2014@gmail.com');
     }
-
-    const subject = encodeURIComponent('Pacific Bim Engineering Services — New Inquiry from ' + name);
-    const body = encodeURIComponent(
-      'Name: ' + name + '\n' +
-      'Phone: ' + (phone || 'Not provided') + '\n' +
-      'Email: ' + email + '\n' +
-      'Services: ' + (services || 'Not specified') + '\n' +
-      'Notes: ' + (notes || 'None') + '\n'
-    );
-
-    window.location.href = 'mailto:elmoherrera2014@gmail.com?subject=' + subject + '&body=' + body;
-
-    // Show success message
-    document.querySelector('.contact-form').style.display = 'none';
-    const success = document.querySelector('.form-success');
-    success.style.display = 'block';
   }
 </script>
 </body>

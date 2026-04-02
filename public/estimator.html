@@ -121,7 +121,7 @@
 <body>
   <nav id="navbar" aria-label="Main navigation">
     <a href="/" class="logo">
-      <img class="logo-mark" src="/logo.jpg" alt="Pacific Bim Engineering Services">
+      <img class="logo-mark" src="/logo.jpg" alt="Pacific Bim Engineering Services" onerror="this.onerror=null;this.style.display='none';">
       <div class="logo-text">
         <span class="logo-name">Pacific Bim</span>
         <span class="logo-sub">Engineering Services</span>
@@ -137,6 +137,12 @@
     </div>
     <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
   </nav>
+  <noscript>
+    <div style="text-align:center;padding:80px 20px;font-family:'Plus Jakarta Sans',sans-serif;">
+      <h2 style="color:#1C3A52;margin-bottom:12px;">JavaScript Required</h2>
+      <p style="color:#7A95A8;">Please enable JavaScript to use the permit cost estimator.</p>
+    </div>
+  </noscript>
   <main id="root" style="padding-top:76px;"></main>
   <script type="text/babel">
 const { useState, useEffect } = React;
@@ -219,45 +225,76 @@ function PermitEstimator() {
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", notes: "" });
 
   useEffect(() => {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = FONTS_LINK;
-    document.head.appendChild(link);
+    try {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = FONTS_LINK;
+      document.head.appendChild(link);
+    } catch (e) {
+      console.error('Failed to load fonts:', e);
+    }
   }, []);
 
   const calcEstimate = () => {
-    if (!projectType || !scope || !timeline) return { low: 0, high: 0 };
-    const base = PRICING[projectType].base;
-    const mult = SCOPE_MULTIPLIERS[scope].mult;
-    const adj = TIMELINE_ADJUSTMENTS[timeline].adj;
-    let low = Math.round(base[0] * mult * (1 + adj) / 50) * 50;
-    let high = Math.round(base[1] * mult * (1 + adj) / 50) * 50;
-    let addonLow = 0, addonHigh = 0;
-    addons.forEach(a => {
-      addonLow += ADDONS[a].price[0];
-      addonHigh += ADDONS[a].price[1];
-    });
-    return { low: low + addonLow, high: high + addonHigh, baseLow: low, baseHigh: high, addonLow, addonHigh };
+    try {
+      if (!projectType || !scope || !timeline) return { low: 0, high: 0, baseLow: 0, baseHigh: 0, addonLow: 0, addonHigh: 0 };
+      const pricing = PRICING[projectType];
+      const scopeData = SCOPE_MULTIPLIERS[scope];
+      const timelineData = TIMELINE_ADJUSTMENTS[timeline];
+      if (!pricing || !scopeData || !timelineData) return { low: 0, high: 0, baseLow: 0, baseHigh: 0, addonLow: 0, addonHigh: 0 };
+      const base = pricing.base;
+      const mult = scopeData.mult;
+      const adj = timelineData.adj;
+      let low = Math.round(base[0] * mult * (1 + adj) / 50) * 50;
+      let high = Math.round(base[1] * mult * (1 + adj) / 50) * 50;
+      let addonLow = 0, addonHigh = 0;
+      addons.forEach(a => {
+        if (ADDONS[a]) {
+          addonLow += ADDONS[a].price[0];
+          addonHigh += ADDONS[a].price[1];
+        }
+      });
+      return { low: low + addonLow, high: high + addonHigh, baseLow: low, baseHigh: high, addonLow, addonHigh };
+    } catch (e) {
+      console.error('Estimate calculation error:', e);
+      return { low: 0, high: 0, baseLow: 0, baseHigh: 0, addonLow: 0, addonHigh: 0 };
+    }
   };
 
   const handleSubmit = () => {
-    if (!formData.name || !formData.email) return;
-    const est = calcEstimate();
-    const subject = encodeURIComponent(`Pacific Bim Engineering \u2014 Estimate Request from ${formData.name}`);
-    const body = encodeURIComponent(
-      `--- PERMIT COST ESTIMATE REQUEST ---\n\n` +
-      `Name: ${formData.name}\n` +
-      `Email: ${formData.email}\n` +
-      `Phone: ${formData.phone || "Not provided"}\n\n` +
-      `Project Type: ${PRICING[projectType].label}\n` +
-      `Scope: ${SCOPE_MULTIPLIERS[scope].label} (${SCOPE_MULTIPLIERS[scope].desc})\n` +
-      `Timeline: ${TIMELINE_ADJUSTMENTS[timeline].label} (${TIMELINE_ADJUSTMENTS[timeline].desc})\n` +
-      `Add-ons: ${addons.length ? addons.map(a => ADDONS[a].label).join(", ") : "None"}\n\n` +
-      `Estimated Range: $${est.low.toLocaleString()} \u2013 $${est.high.toLocaleString()}\n\n` +
-      `Notes: ${formData.notes || "None"}\n`
-    );
-    window.location.href = `mailto:elmoherrera2014@gmail.com?subject=${subject}&body=${body}`;
-    setSubmitted(true);
+    try {
+      const name = (formData.name || '').trim();
+      const email = (formData.email || '').trim();
+      if (!name || !email) return;
+      // Basic email format validation
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+      const est = calcEstimate();
+      const pricingLabel = PRICING[projectType] ? PRICING[projectType].label : projectType;
+      const scopeLabel = SCOPE_MULTIPLIERS[scope] ? `${SCOPE_MULTIPLIERS[scope].label} (${SCOPE_MULTIPLIERS[scope].desc})` : scope;
+      const timelineLabel = TIMELINE_ADJUSTMENTS[timeline] ? `${TIMELINE_ADJUSTMENTS[timeline].label} (${TIMELINE_ADJUSTMENTS[timeline].desc})` : timeline;
+      const addonLabels = addons.length ? addons.map(a => ADDONS[a] ? ADDONS[a].label : a).join(", ") : "None";
+      const subject = encodeURIComponent(`Pacific Bim Engineering \u2014 Estimate Request from ${name}`);
+      const body = encodeURIComponent(
+        `--- PERMIT COST ESTIMATE REQUEST ---\n\n` +
+        `Name: ${name}\n` +
+        `Email: ${email}\n` +
+        `Phone: ${formData.phone || "Not provided"}\n\n` +
+        `Project Type: ${pricingLabel}\n` +
+        `Scope: ${scopeLabel}\n` +
+        `Timeline: ${timelineLabel}\n` +
+        `Add-ons: ${addonLabels}\n\n` +
+        `Estimated Range: $${est.low.toLocaleString()} \u2013 $${est.high.toLocaleString()}\n\n` +
+        `Notes: ${formData.notes || "None"}\n`
+      );
+      window.location.href = `mailto:elmoherrera2014@gmail.com?subject=${subject}&body=${body}`;
+      setSubmitted(true);
+    } catch (e) {
+      console.error('Estimate submission error:', e);
+      alert('Something went wrong. Please try emailing us directly at elmoherrera2014@gmail.com');
+    }
   };
 
   const reset = () => {
@@ -701,7 +738,7 @@ function PermitEstimator() {
     <div style={css.wrap}>
       <div style={css.header}>
         <div style={css.logoRow}>
-          <img src="/logo.jpg" alt="Pacific Bim Engineering Services" style={css.logoMark} />
+          <img src="/logo.jpg" alt="Pacific Bim Engineering Services" style={css.logoMark} onError={(e) => { e.target.style.display = 'none'; }} />
           <div>
             <div style={{ fontFamily: "'Lora', serif", fontSize: 18, fontWeight: 700, color: "#1C3A52" }}>Pacific Bim</div>
             <div style={{ fontSize: 9, letterSpacing: 2, color: "#2B88BF", textTransform: "uppercase", fontWeight: 600 }}>Engineering Services</div>
@@ -742,12 +779,69 @@ function PermitEstimator() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<PermitEstimator />);
+// Error boundary for React rendering errors
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error, info) {
+    console.error('Estimator render error:', error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return React.createElement('div', {
+        style: { padding: '60px 20px', textAlign: 'center', fontFamily: "'Plus Jakarta Sans', sans-serif" }
+      },
+        React.createElement('h2', { style: { color: '#1C3A52', marginBottom: 12 } }, 'Something went wrong'),
+        React.createElement('p', { style: { color: '#7A95A8', marginBottom: 20 } }, 'The estimator encountered an error. Please refresh the page to try again.'),
+        React.createElement('button', {
+          onClick: () => window.location.reload(),
+          style: { padding: '12px 24px', background: '#2B88BF', color: 'white', border: 'none', borderRadius: 10, cursor: 'pointer', fontSize: 14, fontWeight: 600 }
+        }, 'Refresh Page')
+      );
+    }
+    return this.props.children;
+  }
+}
+
+try {
+  var rootEl = document.getElementById('root');
+  if (rootEl) {
+    ReactDOM.createRoot(rootEl).render(<ErrorBoundary><PermitEstimator /></ErrorBoundary>);
+  } else {
+    console.error('Root element not found for estimator app');
+  }
+} catch (e) {
+  console.error('Failed to initialize estimator:', e);
+}
   </script>
   <script>
-    window.addEventListener('scroll', () => document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 30));
-    document.getElementById('navToggle').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
-    document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
+    // Global error handlers
+    window.onerror = function(msg, src, line, col, err) {
+      console.error('Uncaught error:', msg, 'at', src, line + ':' + col, err);
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      console.error('Unhandled promise rejection:', e.reason);
+    });
+
+    try {
+      var navbar = document.getElementById('navbar');
+      if (navbar) {
+        window.addEventListener('scroll', () => { try { navbar.classList.toggle('scrolled', window.scrollY > 30); } catch(e) { /* scroll handler */ } });
+      }
+      var navToggle = document.getElementById('navToggle');
+      var navLinks = document.getElementById('navLinks');
+      if (navToggle && navLinks) {
+        navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+      }
+      document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => { if (navLinks) navLinks.classList.remove('open'); }));
+    } catch (e) {
+      console.error('Navigation setup failed:', e);
+    }
   </script>
 </body>
 </html>

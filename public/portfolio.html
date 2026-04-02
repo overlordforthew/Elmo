@@ -117,7 +117,7 @@
 <body>
   <nav id="navbar" aria-label="Main navigation">
     <a href="/" class="logo">
-      <img class="logo-mark" src="/logo.jpg" alt="Pacific Bim Engineering Services">
+      <img class="logo-mark" src="/logo.jpg" alt="Pacific Bim Engineering Services" onerror="this.onerror=null;this.style.display='none';">
       <div class="logo-text">
         <span class="logo-name">Pacific Bim</span>
         <span class="logo-sub">Engineering Services</span>
@@ -133,6 +133,12 @@
     </div>
     <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
   </nav>
+  <noscript>
+    <div style="text-align:center;padding:80px 20px;font-family:'Plus Jakarta Sans',sans-serif;">
+      <h2 style="color:#1C3A52;margin-bottom:12px;">JavaScript Required</h2>
+      <p style="color:#7A95A8;">Please enable JavaScript to view the project portfolio.</p>
+    </div>
+  </noscript>
   <main id="root" style="padding-top:76px;"></main>
   <script type="text/babel">
 const { useState, useEffect, useMemo } = React;
@@ -1440,7 +1446,10 @@ const SERVICES = ["All", "Full Permit Set + ePlans", "ePlans Coordination", "Pla
 function ImageCarousel({ images, gradient, icon, height, radius }) {
   const imgs = (images || []).filter(Boolean);
   const [idx, setIdx] = React.useState(0);
+  const [imgErrors, setImgErrors] = React.useState({});
   const multi = imgs.length > 1;
+  const handleImgError = (i) => setImgErrors(prev => ({ ...prev, [i]: true }));
+  const currentImgFailed = imgErrors[idx];
   const arrowBtn = (dir) => ({
     position: "absolute", top: "50%", transform: "translateY(-50%)",
     [dir === -1 ? "left" : "right"]: 8,
@@ -1452,10 +1461,11 @@ function ImageCarousel({ images, gradient, icon, height, radius }) {
   });
   return (
     <div style={{ position: "relative", height, width: "100%", overflow: "hidden", borderRadius: radius || 0,
-      background: imgs.length ? "#f0f0f0" : gradient,
+      background: (imgs.length && !currentImgFailed) ? "#f0f0f0" : gradient,
       display: "flex", alignItems: "center", justifyContent: "center" }}>
-      {imgs.length > 0
-        ? <img src={imgs[idx]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: radius || 0, display: "block" }} />
+      {imgs.length > 0 && !currentImgFailed
+        ? <img src={imgs[idx]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: radius || 0, display: "block" }}
+            onError={() => handleImgError(idx)} />
         : <span style={{ fontSize: 48, opacity: 0.3 }}>{icon}</span>
       }
       {multi && <>
@@ -1486,10 +1496,14 @@ function Portfolio() {
   const [animateIn, setAnimateIn] = useState(false);
 
   useEffect(() => {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = FONTS_LINK;
-    document.head.appendChild(link);
+    try {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = FONTS_LINK;
+      document.head.appendChild(link);
+    } catch (e) {
+      console.error('Failed to load fonts:', e);
+    }
     setTimeout(() => setAnimateIn(true), 100);
   }, []);
 
@@ -1729,7 +1743,7 @@ function Portfolio() {
       {/* HEADER */}
       <div style={s.header}>
         <div style={s.logoRow}>
-          <img src="/logo.jpg" alt="Pacific Bim Engineering Services" style={s.logoMark} />
+          <img src="/logo.jpg" alt="Pacific Bim Engineering Services" style={s.logoMark} onError={(e) => { e.target.style.display = 'none'; }} />
           <div>
             <div style={{ fontFamily: "'Lora', serif", fontSize: 18, fontWeight: 700, color: "#1C3A52" }}>Pacific Bim</div>
             <div style={{ fontSize: 9, letterSpacing: 2, color: "#2B88BF", textTransform: "uppercase", fontWeight: 600 }}>Engineering Services</div>
@@ -1890,12 +1904,69 @@ function Portfolio() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<Portfolio />);
+// Error boundary for React rendering errors
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error, info) {
+    console.error('Portfolio render error:', error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return React.createElement('div', {
+        style: { padding: '60px 20px', textAlign: 'center', fontFamily: "'Plus Jakarta Sans', sans-serif" }
+      },
+        React.createElement('h2', { style: { color: '#1C3A52', marginBottom: 12 } }, 'Something went wrong'),
+        React.createElement('p', { style: { color: '#7A95A8', marginBottom: 20 } }, 'The portfolio encountered an error. Please refresh the page to try again.'),
+        React.createElement('button', {
+          onClick: () => window.location.reload(),
+          style: { padding: '12px 24px', background: '#2B88BF', color: 'white', border: 'none', borderRadius: 10, cursor: 'pointer', fontSize: 14, fontWeight: 600 }
+        }, 'Refresh Page')
+      );
+    }
+    return this.props.children;
+  }
+}
+
+try {
+  var rootEl = document.getElementById('root');
+  if (rootEl) {
+    ReactDOM.createRoot(rootEl).render(<ErrorBoundary><Portfolio /></ErrorBoundary>);
+  } else {
+    console.error('Root element not found for portfolio app');
+  }
+} catch (e) {
+  console.error('Failed to initialize portfolio:', e);
+}
   </script>
   <script>
-    window.addEventListener('scroll', () => document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 30));
-    document.getElementById('navToggle').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
-    document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
+    // Global error handlers
+    window.onerror = function(msg, src, line, col, err) {
+      console.error('Uncaught error:', msg, 'at', src, line + ':' + col, err);
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      console.error('Unhandled promise rejection:', e.reason);
+    });
+
+    try {
+      var navbar = document.getElementById('navbar');
+      if (navbar) {
+        window.addEventListener('scroll', () => { try { navbar.classList.toggle('scrolled', window.scrollY > 30); } catch(e) { /* scroll handler */ } });
+      }
+      var navToggle = document.getElementById('navToggle');
+      var navLinks = document.getElementById('navLinks');
+      if (navToggle && navLinks) {
+        navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+      }
+      document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => { if (navLinks) navLinks.classList.remove('open'); }));
+    } catch (e) {
+      console.error('Navigation setup failed:', e);
+    }
   </script>
 </body>
 </html>

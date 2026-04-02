@@ -87,7 +87,7 @@
 <body>
   <nav class="site-nav" id="siteNavbar" aria-label="Main navigation">
     <a href="/" class="logo">
-      <img class="logo-mark" src="/logo.jpg" alt="Pacific Bim Engineering Services">
+      <img class="logo-mark" src="/logo.jpg" alt="Pacific Bim Engineering Services" onerror="this.onerror=null;this.style.display='none';">
       <div class="logo-text">
         <span class="logo-name">Pacific Bim</span>
         <span class="logo-sub">Engineering Services</span>
@@ -103,6 +103,12 @@
     </div>
     <button class="site-nav-toggle" id="siteNavToggle" aria-label="Menu"><span></span><span></span><span></span></button>
   </nav>
+  <noscript>
+    <div style="text-align:center;padding:80px 20px;font-family:'Plus Jakarta Sans',sans-serif;">
+      <h2 style="color:#1C3A52;margin-bottom:12px;">JavaScript Required</h2>
+      <p style="color:#7A95A8;">Please enable JavaScript to access the firm portal.</p>
+    </div>
+  </noscript>
   <main id="root" style="padding-top:76px;"></main>
   <script type="text/babel">
 const { useState, useEffect } = React;
@@ -614,10 +620,21 @@ function LoginScreen({ onLogin }) {
   const [focused, setFocused] = useState(null);
 
   const handleLogin = () => {
-    if (user === "demo" && pass === "demo") {
-      onLogin(DEMO_FIRMS["demo"]);
-    } else {
-      setError("Invalid credentials.");
+    try {
+      const trimmedUser = (user || '').trim().toLowerCase();
+      const trimmedPass = (pass || '').trim();
+      if (!trimmedUser || !trimmedPass) {
+        setError("Please enter both username and password.");
+        return;
+      }
+      if (trimmedUser === "demo" && trimmedPass === "demo") {
+        onLogin(DEMO_FIRMS["demo"]);
+      } else {
+        setError("Invalid credentials.");
+      }
+    } catch (e) {
+      console.error('Login error:', e);
+      setError("An error occurred. Please try again.");
     }
   };
 
@@ -625,7 +642,7 @@ function LoginScreen({ onLogin }) {
     <div style={styles.loginWrap}>
       <div style={styles.loginCard}>
         <div style={styles.loginLogo}>
-          <img src="/logo.jpg" alt="Pacific Bim Engineering Services" style={styles.logoMark} />
+          <img src="/logo.jpg" alt="Pacific Bim Engineering Services" style={styles.logoMark} onError={(e) => { e.target.style.display = 'none'; }} />
           <div>
             <div style={{ fontFamily: "'Lora', serif", fontSize: 18, fontWeight: 700, color: "#1C3A52" }}>Pacific Bim</div>
             <div style={{ fontSize: 9, letterSpacing: 2, color: "#2B88BF", textTransform: "uppercase", fontWeight: 600 }}>Engineering Services</div>
@@ -671,6 +688,9 @@ function LoginScreen({ onLogin }) {
 // ePlans Stage Tracker
 function EplansTracker({ currentStage }) {
   const currentIdx = EPLANS_STAGES.findIndex(s => s.key === currentStage);
+  if (currentIdx === -1) {
+    return <div style={{ padding: 16, fontSize: 13, color: "#A3BDCE" }}>Status information unavailable</div>;
+  }
   return (
     <div style={styles.stageTracker}>
       <div style={styles.stageLine} />
@@ -765,6 +785,31 @@ function ProjectDetail({ project, onBack }) {
 // New Project Form
 function NewProjectForm({ onSubmit }) {
   const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: "", type: "", service: "", timeline: "", notes: "" });
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+    if (!(formData.name || '').trim()) newErrors.name = "Project name is required.";
+    if (!formData.type || formData.type === "Select type...") newErrors.type = "Please select a project type.";
+    if (!formData.service || formData.service === "Select service...") newErrors.service = "Please select a service.";
+    if (!formData.timeline || formData.timeline === "Select timeline...") newErrors.timeline = "Please select a timeline.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    try {
+      if (!validate()) return;
+      setSubmitted(true);
+    } catch (e) {
+      console.error('Form submission error:', e);
+      setErrors({ form: "Something went wrong. Please try again." });
+    }
+  };
+
+  const fieldBorder = (field) => errors[field] ? "#E8655A" : "#E2EBF0";
+  const errorMsg = (field) => errors[field] ? React.createElement('div', { style: { color: '#E8655A', fontSize: 12, marginTop: 4, fontWeight: 500 } }, errors[field]) : null;
 
   if (submitted) {
     return (
@@ -772,7 +817,7 @@ function NewProjectForm({ onSubmit }) {
         <div style={{ fontSize: 48, marginBottom: 16 }}>{"\u{1F33A}"}</div>
         <h2 style={{ fontFamily: "'Lora', serif", fontSize: 24, color: "#1C3A52", marginBottom: 8 }}>Project Submitted!</h2>
         <p style={{ color: "#7A95A8", fontSize: 15, marginBottom: 24 }}>We'll review your scope and get back to you within 24 hours with a timeline and quote.</p>
-        <button onClick={() => setSubmitted(false)} style={{ ...styles.btnPrimary, width: "auto", padding: "12px 32px", display: "inline-block" }}>Submit Another &rarr;</button>
+        <button onClick={() => { setSubmitted(false); setFormData({ name: "", type: "", service: "", timeline: "", notes: "" }); setErrors({}); }} style={{ ...styles.btnPrimary, width: "auto", padding: "12px 32px", display: "inline-block" }}>Submit Another &rarr;</button>
       </div>
     );
   }
@@ -782,14 +827,19 @@ function NewProjectForm({ onSubmit }) {
       <h2 style={{ fontFamily: "'Lora', serif", fontSize: 22, color: "#1C3A52", marginBottom: 4 }}>Submit a New Project</h2>
       <p style={{ color: "#7A95A8", fontSize: 14, marginBottom: 28 }}>Fill in the details below. We'll respond with a timeline and quote within 24 hours.</p>
 
+      {errors.form && <div style={{ background: "#FEF2F2", border: "1px solid #E8655A", borderRadius: 10, padding: "12px 16px", marginBottom: 20, color: "#B91C1C", fontSize: 13, fontWeight: 500 }}>{errors.form}</div>}
+
       <div style={styles.formGrid}>
         <div>
-          <label style={styles.label}>Project Name</label>
-          <input style={styles.input} placeholder="e.g., Kailua ADU &mdash; Smith Residence" />
+          <label style={styles.label}>Project Name *</label>
+          <input style={{ ...styles.input, borderColor: fieldBorder("name") }} placeholder="e.g., Kailua ADU &mdash; Smith Residence"
+            value={formData.name} onChange={e => { setFormData({...formData, name: e.target.value}); if (errors.name) setErrors({...errors, name: ""}); }} />
+          {errorMsg("name")}
         </div>
         <div>
-          <label style={styles.label}>Project Type</label>
-          <select style={styles.select}>
+          <label style={styles.label}>Project Type *</label>
+          <select style={{ ...styles.select, borderColor: fieldBorder("type") }}
+            value={formData.type} onChange={e => { setFormData({...formData, type: e.target.value}); if (errors.type) setErrors({...errors, type: ""}); }}>
             <option>Select type...</option>
             <option>ADU</option>
             <option>Residential &mdash; New Construction</option>
@@ -798,10 +848,12 @@ function NewProjectForm({ onSubmit }) {
             <option>Commercial &mdash; Tenant Improvement</option>
             <option>Other</option>
           </select>
+          {errorMsg("type")}
         </div>
         <div>
-          <label style={styles.label}>Services Needed</label>
-          <select style={styles.select}>
+          <label style={styles.label}>Services Needed *</label>
+          <select style={{ ...styles.select, borderColor: fieldBorder("service") }}
+            value={formData.service} onChange={e => { setFormData({...formData, service: e.target.value}); if (errors.service) setErrors({...errors, service: ""}); }}>
             <option>Select service...</option>
             <option>Full Permit Set + ePlans</option>
             <option>ePlans Coordination Only</option>
@@ -809,21 +861,25 @@ function NewProjectForm({ onSubmit }) {
             <option>REVIT Drafting Only</option>
             <option>Civil Engineering Support</option>
           </select>
+          {errorMsg("service")}
         </div>
         <div>
-          <label style={styles.label}>Target Timeline</label>
-          <select style={styles.select}>
+          <label style={styles.label}>Target Timeline *</label>
+          <select style={{ ...styles.select, borderColor: fieldBorder("timeline") }}
+            value={formData.timeline} onChange={e => { setFormData({...formData, timeline: e.target.value}); if (errors.timeline) setErrors({...errors, timeline: ""}); }}>
             <option>Select timeline...</option>
             <option>Rush &mdash; 1-2 weeks</option>
             <option>Standard &mdash; 3-4 weeks</option>
             <option>Flexible &mdash; 4+ weeks</option>
           </select>
+          {errorMsg("timeline")}
         </div>
       </div>
 
       <div style={{ marginTop: 16 }}>
         <label style={styles.label}>Project Description & Notes</label>
-        <textarea style={styles.textarea} placeholder="Describe the scope, location, any existing drawings, special requirements..." />
+        <textarea style={styles.textarea} placeholder="Describe the scope, location, any existing drawings, special requirements..."
+          value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} />
       </div>
 
       <div style={{ marginTop: 16 }}>
@@ -835,7 +891,7 @@ function NewProjectForm({ onSubmit }) {
         </div>
       </div>
 
-      <button style={{ ...styles.btnPrimary, marginTop: 24 }} onClick={() => setSubmitted(true)}>
+      <button style={{ ...styles.btnPrimary, marginTop: 24 }} onClick={handleSubmit}>
         Submit Project &rarr;
       </button>
     </div>
@@ -861,7 +917,7 @@ function Dashboard({ firm, onLogout }) {
       <div style={styles.app}>
         <div style={styles.sidebar}>
           <div style={styles.sidebarLogo}>
-            <img src="/logo.jpg" alt="Pacific Bim Engineering Services" style={styles.logoMark} />
+            <img src="/logo.jpg" alt="Pacific Bim Engineering Services" style={styles.logoMark} onError={(e) => { e.target.style.display = 'none'; }} />
             <div>
               <div style={styles.sidebarLogoName}>Pacific Bim</div>
               <div style={styles.sidebarLogoSub}>Engineering Services</div>
@@ -892,7 +948,7 @@ function Dashboard({ firm, onLogout }) {
     <div style={styles.app}>
       <div style={styles.sidebar}>
         <div style={styles.sidebarLogo}>
-          <img src="/logo.jpg" alt="Pacific Bim Engineering Services" style={styles.logoMark} />
+          <img src="/logo.jpg" alt="Pacific Bim Engineering Services" style={styles.logoMark} onError={(e) => { e.target.style.display = 'none'; }} />
           <div>
             <div style={styles.sidebarLogoName}>Pacific Bim</div>
             <div style={styles.sidebarLogoSub}>Engineering Services</div>
@@ -924,7 +980,7 @@ function Dashboard({ firm, onLogout }) {
           <>
             <div style={styles.topBar}>
               <div>
-                <h1 style={styles.pageTitle}>Welcome back, {firm.contact.split(",")[0]}</h1>
+                <h1 style={styles.pageTitle}>Welcome back, {(firm.contact || '').split(",")[0] || 'there'}</h1>
                 <p style={styles.pageSub}>Here's what's happening with your projects.</p>
               </div>
               <button style={{ ...styles.btnPrimary, width: "auto", padding: "12px 24px" }} onClick={() => setPage("new")}>
@@ -1037,15 +1093,48 @@ function Dashboard({ firm, onLogout }) {
   );
 }
 
+// Error boundary for React rendering errors
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error, info) {
+    console.error('Dashboard render error:', error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return React.createElement('div', {
+        style: { padding: '60px 20px', textAlign: 'center', fontFamily: "'Plus Jakarta Sans', sans-serif" }
+      },
+        React.createElement('h2', { style: { color: '#1C3A52', marginBottom: 12 } }, 'Something went wrong'),
+        React.createElement('p', { style: { color: '#7A95A8', marginBottom: 20 } }, 'The dashboard encountered an error. Please refresh the page to try again.'),
+        React.createElement('button', {
+          onClick: () => window.location.reload(),
+          style: { padding: '12px 24px', background: '#2B88BF', color: 'white', border: 'none', borderRadius: 10, cursor: 'pointer', fontSize: 14, fontWeight: 600 }
+        }, 'Refresh Page')
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // App Root
 function App() {
   const [firm, setFirm] = useState(null);
 
   useEffect(() => {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = FONTS_LINK;
-    document.head.appendChild(link);
+    try {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = FONTS_LINK;
+      document.head.appendChild(link);
+    } catch (e) {
+      console.error('Failed to load fonts:', e);
+    }
   }, []);
 
   if (!firm) {
@@ -1055,12 +1144,40 @@ function App() {
   return <Dashboard firm={firm} onLogout={() => setFirm(null)} />;
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+try {
+  var rootEl = document.getElementById('root');
+  if (rootEl) {
+    ReactDOM.createRoot(rootEl).render(<ErrorBoundary><App /></ErrorBoundary>);
+  } else {
+    console.error('Root element not found for dashboard app');
+  }
+} catch (e) {
+  console.error('Failed to initialize dashboard:', e);
+}
   </script>
   <script>
-    window.addEventListener('scroll', () => document.getElementById('siteNavbar').classList.toggle('scrolled', window.scrollY > 30));
-    document.getElementById('siteNavToggle').addEventListener('click', () => document.getElementById('siteNavLinks').classList.toggle('open'));
-    document.querySelectorAll('.site-nav-links a').forEach(a => a.addEventListener('click', () => document.getElementById('siteNavLinks').classList.remove('open')));
+    // Global error handlers
+    window.onerror = function(msg, src, line, col, err) {
+      console.error('Uncaught error:', msg, 'at', src, line + ':' + col, err);
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      console.error('Unhandled promise rejection:', e.reason);
+    });
+
+    try {
+      var siteNavbar = document.getElementById('siteNavbar');
+      if (siteNavbar) {
+        window.addEventListener('scroll', () => { try { siteNavbar.classList.toggle('scrolled', window.scrollY > 30); } catch(e) { /* scroll handler */ } });
+      }
+      var siteNavToggle = document.getElementById('siteNavToggle');
+      var siteNavLinks = document.getElementById('siteNavLinks');
+      if (siteNavToggle && siteNavLinks) {
+        siteNavToggle.addEventListener('click', () => siteNavLinks.classList.toggle('open'));
+      }
+      document.querySelectorAll('.site-nav-links a').forEach(a => a.addEventListener('click', () => { if (siteNavLinks) siteNavLinks.classList.remove('open'); }));
+    } catch (e) {
+      console.error('Navigation setup failed:', e);
+    }
   </script>
 </body>
 </html>
